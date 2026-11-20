@@ -258,9 +258,9 @@ $('fitContain').onclick = () => { const C = cover(), g = imgGeom(C); if (!g) ret
 const NUM = ['w', 'h', 'bleed', 'margin', 'gap', 'spacing', 'rand', 'lw', 'dot', 'sheets', 'paperTh', 'coverTh', 'spine'];
 const BOOL = ['duplex', 'marks', 'spineAuto'];
 const TXT = ['color', 'coverBg', 'coverPaper', 'preset'];
-NUM.forEach(k => { $(k).value = S[k]; $(k).addEventListener('input', e => { const v = parseFloat(String(e.target.value).replace(',', '.')); if (!isNaN(v)) { S[k] = v; if (k === 'w' || k === 'h') { S.preset = 'custom'; $('preset').value = 'custom'; } save(); renderAll(); } }); });
-BOOL.forEach(k => { $(k).checked = !!S[k]; $(k).addEventListener('change', e => { S[k] = e.target.checked; save(); renderAll(); }); });
-TXT.forEach(k => { $(k).value = S[k]; $(k).addEventListener('input', e => {
+NUM.forEach(k => { $(k).addEventListener('input', e => { const v = parseFloat(String(e.target.value).replace(',', '.')); if (!isNaN(v)) { S[k] = v; if (k === 'w' || k === 'h') { S.preset = 'custom'; $('preset').value = 'custom'; } save(); renderAll(); } }); });
+BOOL.forEach(k => { $(k).addEventListener('change', e => { S[k] = e.target.checked; save(); renderAll(); }); });
+TXT.forEach(k => { $(k).addEventListener('input', e => {
   S[k] = e.target.value;
   if (k === 'preset' && S.preset !== 'custom') { const [w, h] = S.preset.split('x').map(Number); S.w = w; S.h = h; $('w').value = w; $('h').value = h; }
   save(); renderAll(); }); });
@@ -271,7 +271,13 @@ markSeg();
 const modeBtns = [...document.querySelectorAll('#mode button')];
 const markMode = () => modeBtns.forEach(b => b.classList.toggle('on', (b.dataset.v === 'fold') === !!S.fold));
 modeBtns.forEach(b => b.onclick = () => { S.fold = b.dataset.v === 'fold'; markMode(); save(); renderAll(); });
-markMode();
+function syncInputs() {
+  NUM.forEach(k => $(k).value = S[k]);
+  BOOL.forEach(k => $(k).checked = !!S[k]);
+  TXT.forEach(k => $(k).value = S[k]);
+  markSeg(); markMode();
+}
+syncInputs();
 const readFile = file => { const r = new FileReader(); r.onload = () => loadSrc(r.result); r.readAsDataURL(file); };
 $('file').addEventListener('change', e => { if (e.target.files[0]) readFile(e.target.files[0]); });
 $('loadUrl').onclick = () => fromUrl($('url').value);
@@ -284,6 +290,52 @@ document.addEventListener('drop', e => {
   const u = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain');
   if (u) { $('url').value = u; fromUrl(u); }
 });
+
+/* ---------- Saved notebooks (IndexedDB, so full-size cover images fit) ---------- */
+const db = new Promise((res, rej) => {
+  const r = indexedDB.open('quire', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('configs', { keyPath: 'name' });
+  r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+});
+async function idb(mode, fn) {
+  const d = await db;
+  return new Promise((res, rej) => { const t = d.transaction('configs', mode), q = fn(t.objectStore('configs')); t.oncomplete = () => res(q.result); t.onerror = () => rej(t.error); });
+}
+let names = [];
+function cfgMsg(t, bad) { $('cfgMsg').textContent = t; $('cfgMsg').className = 'msg' + (bad ? ' warn' : ''); }
+async function refreshList(sel) {
+  names = (await idb('readonly', s => s.getAllKeys())).sort((a, b) => a.localeCompare(b));
+  $('cfg').innerHTML = `<option value="">${names.length ? 'Load a saved notebook…' : 'No saved notebooks yet'}</option>` +
+    names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  $('cfg').value = sel;
+  $('cfgDel').disabled = !sel;
+}
+async function loadConfig(name) {
+  const c = await idb('readonly', s => s.get(name));
+  if (!c) return;
+  S = { ...DEF, ...c.S }; IMG.ok = false;
+  $('cfgName').value = name; msg(''); syncInputs(); save(); renderAll();
+  if (S.imgSrc) loadSrc(S.imgSrc, true, () => { S.imgSrc = ''; renderAll(); });
+  cfgMsg(`Loaded “${name}”.`);
+}
+$('cfg').onchange = () => { $('cfgDel').disabled = !$('cfg').value; if ($('cfg').value) loadConfig($('cfg').value); };
+$('cfgName').addEventListener('keydown', e => { if (e.key === 'Enter') $('cfgSave').click(); });
+$('cfgSave').onclick = async () => {
+  const name = $('cfgName').value.trim();
+  if (!name) return $('cfgName').focus();
+  if (name !== $('cfg').value && names.includes(name) && !confirm(`Replace the saved notebook “${name}”?`)) return;
+  try {
+    await idb('readwrite', s => s.put({ name, S: { ...S }, savedAt: new Date().toISOString() }));
+    await refreshList(name); cfgMsg(`Saved “${name}”.`);
+  } catch (e) { cfgMsg('Couldn’t save: ' + e.message, true); }
+};
+$('cfgDel').onclick = async () => {
+  const name = $('cfg').value;
+  if (!name || !confirm(`Delete the saved notebook “${name}”?`)) return;
+  await idb('readwrite', s => s.delete(name));
+  $('cfgName').value = ''; await refreshList(''); cfgMsg(`Deleted “${name}”.`);
+};
+refreshList('');
 
 /* ---------- Printing ---------- */
 function doPrint(what) {

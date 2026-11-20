@@ -33,6 +33,11 @@ h1 { font: italic 600 64px/1 var(--serif); color: var(--acc); margin: 0; letter-
   box-shadow: 0 1px 0 rgba(47, 38, 32, .04), 0 10px 28px -16px rgba(47, 38, 32, .3);
 }
 @media (max-width: 640px) { .panel { padding: 18px 16px } }
+.bar { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 8px; align-items: center; padding: 14px 16px }
+.bar .msg { grid-column: 1 / -1; margin: 0; color: var(--mute) }
+.bar .msg.warn { color: var(--warn) }
+.btn:disabled { opacity: .5; cursor: default; filter: none }
+@media (max-width: 640px) { .bar { grid-template-columns: 1fr auto auto } .bar select { grid-column: 1 / -1 } }
 .panel h2 { font: 600 24px/1.2 var(--serif); margin: 0; display: flex; align-items: center; gap: 12px }
 .num { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--acc); color: #fff; font: 600 15px var(--serif) }
 .sub { margin: 4px 0 6px 42px; color: var(--mute) }
