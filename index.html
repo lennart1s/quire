@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quire – print your own notebooks</title>
+<meta name="description" content="Print notebook pages and a matching cover on plain A4 paper.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<style id="pagestyle"></style>
+</head>
+<body>
+<header class="top">
+  <h1>Quire</h1>
+  <p>Print your own notebooks: pages and a matching cover on plain A4 paper.</p>
+</header>
+
+<main class="steps">
+  <section class="panel">
+    <h2><span class="num">1</span>Size</h2>
+    <p class="sub">How big will your notebook be?</p>
+    <div class="field">
+      <label for="preset">Preset</label>
+      <select id="preset">
+        <option value="148x210">A5 · 148 × 210 mm</option>
+        <option value="105x148">A6 · 105 × 148 mm</option>
+        <option value="125x176">B6 · 125 × 176 mm</option>
+        <option value="90x140">Pocket · 90 × 140 mm</option>
+        <option value="85x135">Field notes · 85 × 135 mm</option>
+        <option value="110x210">Traveler's · 110 × 210 mm</option>
+        <option value="custom">Custom size</option>
+      </select>
+    </div>
+    <div class="row4">
+      <div class="field"><label for="w">Width</label><div class="inp"><input type="number" id="w" step="1" min="20"><span>mm</span></div></div>
+      <div class="field"><label for="h">Height</label><div class="inp"><input type="number" id="h" step="1" min="20"><span>mm</span></div></div>
+      <div class="field"><label for="bleed">Bleed</label><div class="inp"><input type="number" id="bleed" step="0.5" min="0"><span>mm</span></div></div>
+      <div class="field"><label for="margin">Print margin</label><div class="inp"><input type="number" id="margin" step="0.5" min="0"><span>mm</span></div></div>
+    </div>
+    <p class="hint">Width and height are the final size after trimming. Bleed is extra paper around each page that you trim off. The print margin is the edge of the sheet your printer can't reach, usually 3–5 mm.</p>
+    <details class="more">
+      <summary>More options</summary>
+      <div class="field narrow"><label for="gap">Gap between pages</label><div class="inp"><input type="number" id="gap" step="0.5" min="0"><span>mm</span></div></div>
+      <p class="hint">Space between pages on the sheet. With bleed, 0 is fine.</p>
+    </details>
+  </section>
+
+  <section class="panel">
+    <h2><span class="num">2</span>Pages</h2>
+    <p class="sub">What goes on the pages, and how many do you need?</p>
+    <div class="split">
+      <div>
+        <div class="seg two" id="mode">
+          <button data-v="fold">Folded spreads</button><button data-v="single">Single pages</button>
+        </div>
+        <p class="hint">Folded spreads put two pages side by side, folded in the middle. Single pages are cut out one by one.</p>
+        <label class="lbl">Pattern</label>
+        <div class="seg" id="pattern">
+          <button data-v="lines"><svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12"/></svg>Lines</button>
+          <button data-v="grid"><svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12M4 2v12M8 2v12M12 2v12"/></svg>Grid</button>
+          <button data-v="dots"><svg viewBox="0 0 16 16"><path d="M4 4h.01M8 4h.01M12 4h.01M4 8h.01M8 8h.01M12 8h.01M4 12h.01M8 12h.01M12 12h.01" stroke-width="2.4" stroke-linecap="round"/></svg>Dots</button>
+          <button data-v="blank"><svg viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" rx="1"/></svg>Blank</button>
+        </div>
+        <div class="row3">
+          <div class="field" id="f-spacing"><label for="spacing">Spacing</label><div class="inp"><input type="number" id="spacing" step="0.5" min="2"><span>mm</span></div></div>
+          <div class="field" id="f-lw"><label for="lw">Line width</label><div class="inp"><input type="number" id="lw" step="0.05" min="0.05"><span>mm</span></div></div>
+          <div class="field" id="f-dot"><label for="dot">Dot size</label><div class="inp"><input type="number" id="dot" step="0.1" min="0.2"><span>mm</span></div></div>
+          <div class="field"><label for="color">Color</label><input type="color" id="color"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="sheets">A4 sheets</label><input type="number" id="sheets" step="1" min="1"></div>
+          <label class="chk end"><input type="checkbox" id="duplex"> Print both sides</label>
+        </div>
+        <label class="chk"><input type="checkbox" id="marks"> Crop marks</label>
+        <details class="more">
+          <summary>More options</summary>
+          <div class="field narrow"><label for="rand">Inner margin</label><div class="inp"><input type="number" id="rand" step="1" min="0"><span>mm</span></div></div>
+          <p class="hint">A blank border inside each page. With 0 the pattern runs into the bleed.</p>
+        </details>
+      </div>
+      <div class="pv"><div class="pvbox" id="pvPage"></div><span>One A4 sheet</span></div>
+    </div>
+    <div class="summary" id="innerInfo"></div>
+  </section>
+
+  <section class="panel">
+    <h2><span class="num">3</span>Cover</h2>
+    <p class="sub">Pick an image, then drag and zoom it into place.</p>
+    <div class="row src">
+      <label class="drop"><input type="file" id="file" accept="image/*"><b>Choose an image</b><br>or drop it anywhere on the page</label>
+      <div class="field">
+        <label for="url">…or paste an image or Pinterest URL</label>
+        <div class="row url"><input type="text" id="url" placeholder="https://i.pinimg.com/…"><button class="btn sec" id="loadUrl">Load</button></div>
+        <div class="msg" id="msg"></div>
+      </div>
+    </div>
+    <div class="stage empty" id="stage"></div>
+    <div class="tools">
+      <label class="lbl" for="zoom">Zoom</label>
+      <input type="range" id="zoom" min="10" max="600" step="1">
+    </div>
+    <div class="btns">
+      <button class="btn sec" id="fitAll">Fill whole cover</button>
+      <button class="btn sec" id="fitFront">Fill front only</button>
+      <button class="btn sec" id="fitContain">Show whole image</button>
+    </div>
+    <p class="hint">Drag to move, scroll or pinch to zoom. The light border is the bleed, the colored band is the spine with its fold lines.</p>
+    <label class="chk"><input type="checkbox" id="spineAuto"> Calculate spine width</label>
+    <div class="row4">
+      <div class="field"><label for="spine">Spine</label><div class="inp"><input type="number" id="spine" step="0.5" min="0"><span>mm</span></div></div>
+      <div class="field" id="f-paperTh"><label for="paperTh">Paper thickness</label><div class="inp"><input type="number" id="paperTh" step="0.01" min="0"><span>mm</span></div></div>
+      <div class="field" id="f-coverTh"><label for="coverTh">Cover allowance</label><div class="inp"><input type="number" id="coverTh" step="0.1" min="0"><span>mm</span></div></div>
+    </div>
+    <p class="hint" id="spineHint">80 g/m² ≈ 0.10 mm · 100 g/m² ≈ 0.12 mm · 120 g/m² ≈ 0.15 mm. The allowance adds room for the cover board.</p>
+    <details class="more">
+      <summary>More options</summary>
+      <div class="row4">
+        <div class="field"><label for="coverBg">Background</label><input type="color" id="coverBg"></div>
+        <div class="field"><label for="coverPaper">Cover paper</label><select id="coverPaper"><option value="A4">A4</option><option value="A3">A3</option></select></div>
+      </div>
+      <p class="hint">The background shows wherever the image doesn't cover.</p>
+    </details>
+    <div class="summary" id="coverInfo"></div>
+  </section>
+
+  <section class="panel">
+    <h2><span class="num">4</span>Print</h2>
+    <p class="sub">Check both sheets, then print or save them as a PDF.</p>
+    <div class="previews">
+      <div class="pv"><div class="pvbox" id="pvInner"></div><span id="pvInnerLab"></span></div>
+      <div class="pv"><div class="pvbox" id="pvCover"></div><span id="pvCoverLab"></span></div>
+    </div>
+    <div class="btns center">
+      <button class="btn" id="printInner">Print pages</button>
+      <button class="btn" id="printCover">Print cover</button>
+      <button class="btn sec" id="printAll">Everything in one PDF</button>
+    </div>
+    <ul class="tips">
+      <li>In the print dialog set scale to <b>100 % / Actual size</b>, margins to <b>None</b> and turn headers and footers off.</li>
+      <li>To get a PDF, choose “Save as PDF” as the destination.</li>
+      <li>Printing both sides: flip on the long edge. The pattern is centered, so front and back line up.</li>
+      <li>“Everything in one PDF” with an A3 cover mixes paper sizes. That works in Chrome and Edge; for printing directly, print separately.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">Everything runs in your browser. Your settings and cover image are saved on this device only.</footer>
+
+<div id="print"></div>
+<script src="app.js"></script>
+</body>
+</html>
