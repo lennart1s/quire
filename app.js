@@ -1,7 +1,7 @@
 const PX = 96 / 25.4;
 const PAPER = { A4: [297, 210], A3: [420, 297] };
 const SPACING = { lines: 7, grid: 5, dots: 5, blank: 5 };
-const DEF = { preset: '148x210', w: 148, h: 210, bleed: 3, margin: 5, gap: 0, pattern: 'dots', spacing: 5, rand: 0,
+const DEF = { preset: '85x135', w: 85, h: 135, bleed: 3, margin: 5, gap: 0, pattern: 'dots', spacing: 5, rand: 0,
   color: '#9c9c9c', lw: 0.2, dot: 0.6, sheets: 10, duplex: true, marks: true, paperTh: 0.1, coverTh: 0.8,
   spine: 5, spineAuto: true, coverPaper: 'A4', fold: true, coverBg: '#ffffff', imgSrc: '', zoom: 1, offX: 0, offY: 0 };
 const KEY = 'quire';
