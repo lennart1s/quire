@@ -4,7 +4,7 @@
   --bg: #f5efe4;
   --panel: #fffcf7;
   --ink: #2f2620;
-  --mute: #7d7064;
+  --mute: #6c6056;
   --line: #e7dccb;
   --soft: #f3ebde;
   --acc: #b54f33;
@@ -83,7 +83,7 @@ input[type=checkbox] { accent-color: var(--acc) }
 details.more { margin-top: 16px; border-top: 1px dashed var(--line); padding-top: 12px }
 details.more summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--acc) }
 
-.drop { display: block; border: 1.5px dashed #d8c8b0; border-radius: 11px; padding: 14px; text-align: center; color: var(--mute); background: var(--soft); cursor: pointer; font-size: 14px }
+.drop { display: block; border: 1.5px dashed #d8c8b0; border-radius: 11px; padding: 14px; text-align: center; color: var(--mute); background: #f8f3ea; cursor: pointer; font-size: 14px }
 .drop b { color: var(--acc) }
 .drop:hover { border-color: var(--acc) }
 .drop input { display: none }

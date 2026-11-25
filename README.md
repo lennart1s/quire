@@ -51,7 +51,7 @@ The one exception is pasting a Pinterest pin link. To find the image, Quire asks
 
 Plain HTML, CSS and JavaScript. Open `index.html` in a browser or serve the folder with any static file server. Chrome and Edge work best for printing.
 
-`how-it-works.html` is the tutorial, a plain page that only shares `style.css`.
+`how-it-works.html` (tutorial) and `privacy.html` are plain pages that only share `style.css`.
 
 The scripts are loaded in this order and share their globals:
 
@@ -61,7 +61,7 @@ The scripts are loaded in this order and share their globals:
 - `text.js`: cover text and its editing
 - `app.js`: the page itself with previews, inputs, cover editing, saved notebooks and printing
 
-The site runs at [quirelet.de](https://quirelet.de) as static files on an nginx server. Canonical links and share images in both HTML files use that address.
+The site runs at [quirelet.de](https://quirelet.de) as static files on an nginx server. Canonical links and share images in the HTML files use that address.
 
 ## License
 
