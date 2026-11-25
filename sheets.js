@@ -63,7 +63,7 @@ function marksSVG(pw, ph, xsT, ysT, top, bottom, left, right) {
 }
 // small note in the waste strip beside or above the content, between its first two marks, if it fits; ex, ey: unprintable edge
 function calNote(x0, y0, ex, ey, segX, segY) {
-  const at = (x, y, r) => `<text x="${f(x)}" y="${f(y)}" transform="rotate(${r} ${f(x)} ${f(y)})" font-family="Helvetica,Arial,sans-serif" font-size="2" text-anchor="middle" fill="#777">Calibrated for one printer · print at 100 %</text>`;
+  const at = (x, y, r) => `<text x="${f(x)}" y="${f(y)}" transform="rotate(${r} ${f(x)} ${f(y)})" font-family="Helvetica,Arial,sans-serif" font-size="2" text-anchor="middle" fill="#777">${tr('Calibrated for one printer · print at 100 %')}</text>`;
   if (x0 - ex >= 3 && segY >= 50) return at(ex + 2, y0 + S.bleed + segY / 2, -90);
   if (y0 - ey >= 3 && segX >= 50) return at(x0 + S.bleed + segX / 2, ey + 2, 0);
   return '';
@@ -108,7 +108,7 @@ function coverBox(C, overlay) {
     h += `<div class="ov trim" style="left:${b}mm;top:${b}mm;width:${f(C.Cw - 2 * b)}mm;height:${f(C.Ch - 2 * b)}mm"></div>`;
     h += `<div class="ov spine" style="left:${f(b + W)}mm;top:0;width:${f(C.sp)}mm;height:${f(C.Ch)}mm"></div>`;
     const lab = (x, t, v) => `<div class="ov lab${v ? ' v' : ''}" style="left:${f(x)}mm;top:${f(b + 4)}mm;font-size:${fs}px">${t}</div>`;
-    h += lab(b + W / 2, 'Back') + lab(b + W + C.sp / 2, `Spine ≈ ${C.sp} mm`, true) + lab(b + W + C.sp + W / 2, 'Front');
+    h += lab(b + W / 2, tr('Back')) + lab(b + W + C.sp / 2, tr('Spine ≈ {0} mm', num(C.sp)), true) + lab(b + W + C.sp + W / 2, tr('Front'));
     h += `<div class="guide v" hidden></div><div class="guide h" hidden></div>`;
   }
   return `<div class="cov" style="width:${f(C.Cw)}mm;height:${f(C.Ch)}mm">${h}</div>`;

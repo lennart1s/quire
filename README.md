@@ -53,6 +53,8 @@ Plain HTML, CSS and JavaScript. Open `index.html` in a browser or serve the fold
 
 `how-it-works.html` (tutorial) and `privacy.html` are plain pages that only share `style.css`.
 
+The German pages are in `de/` and have their own copy of the markup, so a change to a page has to be made in both languages. They share the scripts, whose texts are translated by `tr()` with the dictionary in `de.js`.
+
 The scripts are loaded in this order and share their globals:
 
 - `state.js`: settings, storage and small helpers

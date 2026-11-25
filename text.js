@@ -47,15 +47,15 @@ function selectText(t) {
 }
 function changeText(patch) { Object.assign(sel, patch); save(); renderTexts(); }
 function syncText() {
-  if (![...$('tFont').options].some(o => o.value === sel.font)) $('tFont').add(new Option(`${sel.font} (not on this device)`, sel.font));
+  if (![...$('tFont').options].some(o => o.value === sel.font)) $('tFont').add(new Option(tr('{0} (not on this device)', sel.font), sel.font));
   $('tText').value = sel.text; $('tFont').value = sel.font; $('tSize').value = sel.size; $('tColor').value = sel.color;
   document.querySelectorAll('#tStyle button').forEach(b => b.classList.toggle('on', sel[b.dataset.v]));
   document.querySelectorAll('#tAlign button').forEach(b => b.classList.toggle('on', sel.align === b.dataset.v));
 }
-$('tFont').innerHTML = Object.entries(FONTS).map(([g, [def, ...more]]) => `<optgroup label="${def}">` +
-  [def, ...more.filter(isInstalled)].map(n => `<option value="${n}" style="font-family:${fontFamily(n)}">${n}${n === def ? ' (default)' : ''}</option>`).join('') + '</optgroup>').join('');
+$('tFont').innerHTML = Object.entries(FONTS).map(([g, [def, ...more]]) => `<optgroup label="${tr(def)}">` +
+  [def, ...more.filter(isInstalled)].map(n => `<option value="${n}" style="font-family:${fontFamily(n)}">${n === def ? tr('{0} (default)', tr(n)) : n}</option>`).join('') + '</optgroup>').join('');
 $('addText').onclick = () => {
-  const t = { text: 'Title', font: 'Serif', size: 24, color: IMG.ok ? '#ffffff' : '#000000', bold: false, italic: false, underline: false, align: 'center', turn: 0, part: 'front', x: 0.5, y: 0.3 };
+  const t = { text: tr('Title'), font: 'Serif', size: 24, color: IMG.ok ? '#ffffff' : '#000000', bold: false, italic: false, underline: false, align: 'center', turn: 0, part: 'front', x: 0.5, y: 0.3 };
   S.texts = [...S.texts, t];
   $('stagebox').scrollIntoView({ block: 'nearest' }); // before it turns sticky on phones, or it would cover the text field
   selectText(t); $('tText').focus(); $('tText').select(); $('tText').scrollIntoView({ block: 'nearest' }); // WebKit doesn't reveal it on focus

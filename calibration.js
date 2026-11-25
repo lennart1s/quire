@@ -29,7 +29,7 @@ function edgeLines() {
   dist.forEach((v, i) => {
     const x = 105 + (i - 10) * 6, y = 148.5 + (i - 10) * 8;
     d += `M${x - 2.6} ${v}h5.2M${x - 2.6} ${297 - v}h5.2M${v} ${y - 3.6}v7.2M${210 - v} ${y - 3.6}v7.2`;
-    t += txt(x, 19, v, 2.5) + txt(x, 279.8, v, 2.5) + txt(18.5, y + 0.9, v, 2.5) + txt(191.5, y + 0.9, v, 2.5);
+    t += [[x, 19], [x, 279.8], [18.5, y + 0.9], [191.5, y + 0.9]].map(([x, y]) => txt(x, y, num(v), 2.5)).join('');
   });
   return stroke(d, 0.2) + t;
 }
@@ -43,32 +43,32 @@ function scales(x, y) {
   return stroke(d, 0.1) + t;
 }
 const cross = (x, y) => stroke(`M${x - 31} ${y}h62M${x} ${y - 31}v62`, 0.12, '#d00');
-const testTitle = (side, corrected) => txt(105, 34, `Quire test sheet · ${side} ↑`, 5, 'font-weight="700"')
-  + (corrected ? '<rect x="55" y="37" width="100" height="8.5" rx="1.5"/>' + txt(105, 43, 'WITH CORRECTION · only for checking', 5, 'fill="#fff" font-weight="700"') : '');
+const testTitle = (side, corrected) => txt(105, 34, tr('Quire test sheet · {0} ↑', tr(side)), 5, 'font-weight="700"')
+  + (corrected ? '<rect x="55" y="37" width="100" height="8.5" rx="1.5"/>' + txt(105, 43, tr('WITH CORRECTION · only for checking'), 5, 'fill="#fff" font-weight="700"') : '');
 function testFront(corrected) {
   const x = 25, y = 68.5, n = CAL_LEN;
   return edgeLines() + testTitle('FRONT', corrected)
     + stroke(`M${x} 58h${n}M${x} 54v8M${x + n} 54v8M30 ${y}v${n}M26 ${y}h8M26 ${y + n}h8`, 0.2)
-    + badge(62, 51.5, 1) + txt(109, 52.8, `Width: measure this line. It should be ${n} mm.`)
-    + badge(37, 190, 1) + txt(38.3, 143, `Height: measure this line. It should be ${n} mm.`, 3.6, 'transform="rotate(-90 38.3 143)"')
-    + TARGETS.map(([x, y]) => scales(x, y)).join('') + txt(68, 92, 'skew check', 2.6) + txt(142, 215, 'skew check', 2.6)
-    + badge(105, 168, 3) + txt(105, 178, 'Hold against the light. Read where the red back') + txt(105, 182.5, 'lines cross the two scales (1 tick = 0.5 mm).')
-    + badge(105, 247, 2) + txt(105, 257, 'Edges: on all four sides and both pages, find the smallest number whose line is printed.') + txt(105, 261.5, 'Remember the largest of these eight numbers.');
+    + badge(62, 51.5, 1) + txt(109, 52.8, tr('Width: measure this line. It should be {0} mm.', n))
+    + badge(37, 190, 1) + txt(38.3, 143, tr('Height: measure this line. It should be {0} mm.', n), 3.6, 'transform="rotate(-90 38.3 143)"')
+    + TARGETS.map(([x, y]) => scales(x, y)).join('') + txt(68, 92, tr('skew check'), 2.6) + txt(142, 215, tr('skew check'), 2.6)
+    + badge(105, 168, 3) + txt(105, 178, tr('Hold against the light. Read where the red back')) + txt(105, 182.5, tr('lines cross the two scales (1 tick = 0.5 mm).'))
+    + badge(105, 247, 2) + txt(105, 257, tr('Edges: on all four sides and both pages, find the smallest number whose line is printed.')) + txt(105, 261.5, tr('Remember the largest of these eight numbers.'));
 }
 function testBack(corrected) {
   return edgeLines() + testTitle('BACK', corrected)
     + TARGETS.map(([x, y]) => cross(210 - x, y)).join('')
-    + txt(105, 257, 'If this arrow points the other way than on the front, print again and flip on the long edge.');
+    + txt(105, 257, tr('If this arrow points the other way than on the front, print again and flip on the long edge.'));
 }
 const sheetSVG = (w, h, box, html) => `<svg width="${w}" height="${h}" viewBox="${box}" font-family="Helvetica,Arial,sans-serif">${html}</svg>`;
 
 /* ---------- Dialog ---------- */
 function renderCal() {
   const c = correction(true), sign = v => v < 0 ? '−' : '+';
-  const mm = v => `${v ? sign(v) : ''}${Math.abs(v)} mm`, pct = s => `${sign(s - 1)}${Math.abs((s - 1) * 100).toFixed(1)} %`;
+  const mm = v => `${v ? sign(v) : ''}${num(Math.abs(v))} mm`, pct = s => `${sign(s - 1)}${num(+Math.abs((s - 1) * 100).toFixed(1))} %`;
   $('calInfo').innerHTML = (isCorrected(c)
-    ? `<b>Corrected for your printer:</b> width ${pct(c.sx)}, height ${pct(c.sy)}, front to back offset ${mm(CAL.backX)} across, ${mm(CAL.backY)} down. A PDF saved now includes this, so it only fits this printer.`
-    : 'No size or front to back correction for your printer.') + ` Print margin: ${CAL.margin} mm.`;
+    ? tr('<b>Corrected for your printer:</b> width {0}, height {1}, front to back offset {2} across, {3} down. A PDF saved now includes this, so it only fits this printer.', pct(c.sx), pct(c.sy), mm(CAL.backX), mm(CAL.backY))
+    : tr('No size or front to back correction for your printer.')) + ' ' + tr('Print margin: {0} mm.', num(CAL.margin));
   $('calWarn').hidden = !badLen(CAL.calW) && !badLen(CAL.calH);
 }
 Object.keys(CAL).forEach(k => {

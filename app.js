@@ -7,7 +7,7 @@ function renderStage() {
   K = wpx / C.Cw;
   st.style.height = (C.Ch * K) + 'px';
   st.classList.toggle('empty', !IMG.ok);
-  st.innerHTML = (IMG.ok || S.texts.length ? '' : `<div class="ph"><span>Your cover image will appear here</span></div>`) +
+  st.innerHTML = (IMG.ok || S.texts.length ? '' : `<div class="ph"><span>${tr('Your cover image will appear here')}</span></div>`) +
     `<div class="scaled" style="transform:scale(${K / PX});--px:${PX / K}px">${coverBox(C, 13 * PX / K)}</div>`;
 }
 function updateImg() {
@@ -30,16 +30,16 @@ function renderAll() {
   $('f-dot').hidden = S.pattern !== 'dots';
   $('f-paperTh').hidden = $('f-coverTh').hidden = $('spineHint').hidden = !S.spineAuto;
   $('innerInfo').innerHTML = L.n
-    ? `<b>${plural(L.n, S.fold ? 'spread' : 'page')} per A4 sheet</b> (${L.nx} × ${L.ny}${L.rot ? ', rotated' : ''}) · ${leaves} leaves = ${leaves * (S.duplex ? 2 : 1)} notebook pages · the PDF has ${pages} pages`
-      + (S.fold ? ' · dashed marks show the fold' : '')
-    : `<span class="warn">${S.fold
+    ? `<b>${tr('{0} per A4 sheet', plural(L.n, S.fold ? 'spread' : 'page'))}</b> (${L.nx} × ${L.ny}${L.rot ? tr(', rotated') : ''}) · ${tr('{0} leaves = {1} notebook pages · the PDF has {2} pages', leaves, leaves * (S.duplex ? 2 : 1), pages)}`
+      + (S.fold ? tr(' · dashed marks show the fold') : '')
+    : `<span class="warn">${tr(S.fold
       ? 'A spread doesn’t fit on A4 with this bleed and your printer’s margin. Reduce the bleed, pick a smaller size or switch to single pages.'
-      : 'The page doesn’t fit on A4 with this bleed and your printer’s margin.'}</span>`;
+      : 'The page doesn’t fit on A4 with this bleed and your printer’s margin.')}</span>`;
   $('spine').disabled = S.spineAuto;
   if (S.spineAuto) $('spine').value = C.sp;
-  let ci = `Cover: ${f(C.Cw)} × ${f(C.Ch)} mm incl. bleed · spine ≈ ${C.sp} mm (${C.leaves} leaves) · printed on A4`;
-  if (S.coverDir && C.fits) ci += C.likePages ? ' in the same direction as the pages' : ` · <span class="warn">too wide for the direction of the pages, printed sideways</span>`;
-  if (!C.fits) ci += ` · <span class="warn">doesn’t fit on A4. Reduce size or bleed.</span>`;
+  let ci = tr('Cover: {0} × {1} mm incl. bleed · spine ≈ {2} mm ({3} leaves) · printed on A4', num(f(C.Cw)), num(f(C.Ch)), num(C.sp), C.leaves);
+  if (S.coverDir && C.fits) ci += C.likePages ? tr(' in the same direction as the pages') : ` · <span class="warn">${tr('too wide for the direction of the pages, printed sideways')}</span>`;
+  if (!C.fits) ci += ` · <span class="warn">${tr('doesn’t fit on A4. Reduce size or bleed.')}</span>`;
   $('coverInfo').innerHTML = ci;
   renderCal();
   renderStage();
@@ -48,7 +48,7 @@ function renderAll() {
   preview($('pvPage'), sheet, 210, 297, Math.max(180, $('pvPage').parentElement.clientWidth || 240));
   preview($('pvInner'), sheet, 210, 297, maxW);
   preview($('pvCover'), coverSheet(C), ...coverPaper(C), maxW);
-  $('pvInnerLab').textContent = 'Pages · A4' + (S.fold ? ' · folded spreads' : '');
+  $('pvInnerLab').textContent = tr('Pages · A4') + (S.fold ? tr(' · folded spreads') : '');
   $('zoom').value = Math.round(S.zoom * 100);
 }
 
@@ -59,16 +59,16 @@ function loadSrc(src, keep, onfail) {
   im.onload = () => {
     IMG.ok = true; IMG.nw = im.naturalWidth; IMG.nh = im.naturalHeight; S.imgSrc = src;
     if (!keep) { S.zoom = 1; S.offX = 0; S.offY = 0; S.turn = 0; S.mirror = false; setLock(false); }
-    msg(`Image loaded (${IMG.nw} × ${IMG.nh} px)`); save(); renderAll();
+    msg(tr('Image loaded ({0} × {1} px)', IMG.nw, IMG.nh)); save(); renderAll();
   };
-  im.onerror = () => onfail ? onfail() : msg('Couldn’t load the image. Is it a direct image address?', true);
+  im.onerror = () => onfail ? onfail() : msg(tr('Couldn’t load the image. Is it a direct image address?'), true);
   im.src = src;
 }
 const PIN_SIZE = /\/(\d+x\d*|originals)\//;
 async function fromUrl(u) {
   u = u.trim(); if (!u) return;
   if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
-  msg('Loading …');
+  msg(tr('Loading …'));
   if (/i\.pinimg\.com/.test(u)) {
     return loadSrc(u.replace(PIN_SIZE, '/originals/'), false,
       () => loadSrc(u.replace(PIN_SIZE, '/736x/'), false, () => loadSrc(u)));
@@ -88,7 +88,7 @@ async function fromUrl(u) {
       }
     } catch (e) {}
     if (found) return fromUrl(found);
-    return msg('Pinterest is blocking direct access right now. Open the pin, right-click the image (on a phone: long-press), choose “Copy image address” and paste the <i>i.pinimg.com</i> address here.', true);
+    return msg(tr('Pinterest is blocking direct access right now. Open the pin, right-click the image (on a phone: long-press), choose “Copy image address” and paste the <i>i.pinimg.com</i> address here.'), true);
   }
   loadSrc(u);
 }
@@ -109,7 +109,7 @@ function setLock(on) {
   locked = on;
   if (!on) selectText(null);
   st.classList.toggle('unlocked', !on);
-  $('lock').lastChild.textContent = on ? 'Unlock' : 'Lock';
+  $('lock').lastChild.textContent = tr(on ? 'Unlock' : 'Lock');
 }
 function armLock() {
   clearTimeout(lockT);
@@ -198,7 +198,7 @@ let names = [];
 function cfgMsg(t, bad) { $('cfgMsg').textContent = t; $('cfgMsg').className = 'msg' + (bad ? ' warn' : ''); }
 async function refreshList(sel) {
   names = (await idb('readonly', s => s.getAllKeys())).sort((a, b) => a.localeCompare(b));
-  $('cfg').innerHTML = `<option value="">${names.length ? 'Load a saved notebook…' : 'No saved notebooks yet'}</option>` +
+  $('cfg').innerHTML = `<option value="">${tr(names.length ? 'Load a saved notebook…' : 'No saved notebooks yet')}</option>` +
     names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
   $('cfg').value = sel;
   $('cfgDel').disabled = !sel;
@@ -210,24 +210,24 @@ async function loadConfig(name) {
   S = { ...DEF, ...c.S }; dropEmpty(); IMG.ok = false; setLock(true);
   $('cfgName').value = name; msg(''); syncInputs(); save(); renderAll();
   if (S.imgSrc) loadSrc(S.imgSrc, true, () => { S.imgSrc = ''; renderAll(); });
-  cfgMsg(`Loaded “${name}”.`);
+  cfgMsg(tr('Loaded “{0}”.', name));
 }
 $('cfg').onchange = () => { $('cfgDel').disabled = !$('cfg').value; if ($('cfg').value) loadConfig($('cfg').value); };
 $('cfgName').addEventListener('keydown', e => { if (e.key === 'Enter') $('cfgSave').click(); });
 $('cfgSave').onclick = async () => {
   const name = $('cfgName').value.trim();
   if (!name) return $('cfgName').focus();
-  if (name !== $('cfg').value && names.includes(name) && !confirm(`Replace the saved notebook “${name}”?`)) return;
+  if (name !== $('cfg').value && names.includes(name) && !confirm(tr('Replace the saved notebook “{0}”?', name))) return;
   try {
     await idb('readwrite', s => s.put({ name, S: { ...S }, savedAt: new Date().toISOString() }));
-    await refreshList(name); cfgMsg(`Saved “${name}”.`);
-  } catch (e) { cfgMsg('Couldn’t save: ' + e.message, true); }
+    await refreshList(name); cfgMsg(tr('Saved “{0}”.', name));
+  } catch (e) { cfgMsg(tr('Couldn’t save: {0}', e.message), true); }
 };
 $('cfgDel').onclick = async () => {
   const name = $('cfg').value;
-  if (!name || !confirm(`Delete the saved notebook “${name}”?`)) return;
+  if (!name || !confirm(tr('Delete the saved notebook “{0}”?', name))) return;
   await idb('readwrite', s => s.delete(name));
-  $('cfgName').value = ''; await refreshList(''); cfgMsg(`Deleted “${name}”.`);
+  $('cfgName').value = ''; await refreshList(''); cfgMsg(tr('Deleted “{0}”.', name));
 };
 refreshList('');
 
@@ -236,12 +236,12 @@ function doPrint(what) {
   const L = layout(), C = cover();
   let html = '';
   if (what !== 'cover') {
-    if (!L.n) return alert('The page size doesn’t fit on A4.');
+    if (!L.n) return alert(tr('The page size doesn’t fit on A4.'));
     const c = correction(S.duplex), one = innerSheet(L, corrCSS(c)) + (S.duplex ? innerSheet(L, corrCSS(c, -1), true) : '');
     html += one.repeat(S.sheets);
   }
   if (what !== 'inner') {
-    if (!C.fits) return alert('The cover doesn’t fit on A4.');
+    if (!C.fits) return alert(tr('The cover doesn’t fit on A4.'));
     html += coverSheet(C, true, corrCSS(correction(false)));
   }
   printHTML(html);

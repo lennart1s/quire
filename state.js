@@ -11,7 +11,10 @@ const IMG = { ok: false, nw: 0, nh: 0 };
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const f = n => +(+n).toFixed(3);
-const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+// texts are English in the code, the German pages load their translations from de.js; {0}, {1} … are filled with the values
+const tr = (s, ...v) => (window.DE?.[s] ?? s).replace(/\{(\d)\}/g, (_, i) => v[i]);
+const num = n => n.toLocaleString(document.documentElement.lang, { maximumFractionDigits: 3, useGrouping: false });
+const plural = (n, word) => `${n} ${tr(n === 1 ? word : word + 's')}`;
 
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(S)); }

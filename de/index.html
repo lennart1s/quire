@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quire – Eigene Notizhefte drucken auf A4-Papier</title>
+<meta name="description" content="Kostenlos im Browser: Drucke gepunktete, linierte oder karierte Notizhefte und einen passenden Umschlag mit Rücken auf normales A4-Papier. Ohne Anmeldung und Installation.">
+<link rel="canonical" href="https://quirelet.de/de/">
+<link rel="alternate" hreflang="en" href="https://quirelet.de/">
+<link rel="alternate" hreflang="de" href="https://quirelet.de/de/">
+<link rel="alternate" hreflang="x-default" href="https://quirelet.de/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Quire">
+<meta property="og:title" content="Quire – Eigene Notizhefte drucken auf A4-Papier">
+<meta property="og:description" content="Kostenlos im Browser: Drucke gepunktete, linierte oder karierte Notizhefte und einen passenden Umschlag mit Rücken auf normales A4-Papier. Ohne Anmeldung und Installation.">
+<meta property="og:url" content="https://quirelet.de/de/">
+<meta property="og:locale" content="de_DE">
+<meta property="og:image" content="https://quirelet.de/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Quire: Drucke deine eigenen Notizhefte">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "WebApplication", "name": "Quire", "inLanguage": "de", "url": "https://quirelet.de/de/", "description": "Kostenlos im Browser: Drucke gepunktete, linierte oder karierte Notizhefte und einen passenden Umschlag mit Rücken auf normales A4-Papier. Ohne Anmeldung und Installation.", "image": "https://quirelet.de/og.png",
+  "applicationCategory": "DesignApplication", "operatingSystem": "Any", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}}
+</script>
+<link rel="icon" href="../logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body class="app">
+<header class="top">
+  <h1>Quire</h1>
+  <p>Drucke deine eigenen Notizhefte: Seiten und passender Umschlag auf normalem A4-Papier. <a href="how-it-works.html">So geht’s</a> · <a href="../index.html" lang="en" hreflang="en">English</a></p>
+</header>
+
+<main class="steps">
+  <section class="panel bar">
+    <select id="cfg" aria-label="Gespeicherte Hefte"></select>
+    <input type="text" id="cfgName" placeholder="Name für dieses Heft" aria-label="Name des Hefts">
+    <button class="btn" id="cfgSave">Speichern</button>
+    <button class="btn sec" id="cfgDel">Löschen</button>
+    <div class="msg" id="cfgMsg"></div>
+  </section>
+
+  <section class="panel">
+    <h2><span class="num">1</span>Größe</h2>
+    <p class="sub">Wie groß soll dein Heft werden?</p>
+    <div class="field">
+      <label for="preset">Vorlage</label>
+      <select id="preset">
+        <option value="105x148">A6 · 105 × 148 mm</option>
+        <option value="125x176">B6 · 125 × 176 mm</option>
+        <option value="90x140">Pocket · 90 × 140 mm</option>
+        <option value="85x135">Field Notes · 85 × 135 mm</option>
+        <option value="custom">Eigene Größe</option>
+      </select>
+    </div>
+    <div class="row3">
+      <div class="field"><label for="w">Breite</label><div class="inp"><input type="number" id="w" step="1" min="20"><span>mm</span></div></div>
+      <div class="field"><label for="h">Höhe</label><div class="inp"><input type="number" id="h" step="1" min="20"><span>mm</span></div></div>
+      <div class="field"><label for="bleed">Beschnitt</label><div class="inp"><input type="number" id="bleed" step="0.5" min="0"><span>mm</span></div></div>
+    </div>
+    <p class="hint">Breite und Höhe sind das fertige Maß nach dem Zuschneiden. Der Beschnitt ist zusätzliches Papier rund um jede Seite, das du abschneidest.</p>
+    <details class="more">
+      <summary>Weitere Optionen</summary>
+      <div class="field narrow"><label for="gap">Abstand zwischen Seiten</label><div class="inp"><input type="number" id="gap" step="0.5" min="0"><span>mm</span></div></div>
+      <p class="hint">Platz zwischen den Seiten auf dem Blatt. Mit Beschnitt reicht 0.</p>
+    </details>
+  </section>
+
+  <section class="panel">
+    <h2><span class="num">2</span>Seiten</h2>
+    <p class="sub">Was soll auf die Seiten, und wie viele brauchst du?</p>
+    <div class="split">
+      <div>
+        <div class="seg two" id="mode">
+          <button data-v="fold">Gefalzte Doppelseiten</button><button data-v="single">Einzelseiten</button>
+        </div>
+        <p class="hint">Bei gefalzten Doppelseiten liegen zwei Seiten nebeneinander und werden in der Mitte gefalzt. Einzelseiten werden einzeln ausgeschnitten.</p>
+        <label class="lbl">Muster</label>
+        <div class="seg" id="pattern">
+          <button data-v="lines"><svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12"/></svg>Liniert</button>
+          <button data-v="grid"><svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12M4 2v12M8 2v12M12 2v12"/></svg>Kariert</button>
+          <button data-v="dots"><svg viewBox="0 0 16 16"><path d="M4 4h.01M8 4h.01M12 4h.01M4 8h.01M8 8h.01M12 8h.01M4 12h.01M8 12h.01M12 12h.01" stroke-width="2.4" stroke-linecap="round"/></svg>Punkte</button>
+          <button data-v="blank"><svg viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" rx="1"/></svg>Blanko</button>
+        </div>
+        <div class="row3">
+          <div class="field" id="f-spacing"><label for="spacing">Abstand</label><div class="inp"><input type="number" id="spacing" step="0.5" min="2"><span>mm</span></div></div>
+          <div class="field" id="f-lw"><label for="lw">Linienstärke</label><div class="inp"><input type="number" id="lw" step="0.05" min="0.05"><span>mm</span></div></div>
+          <div class="field" id="f-dot"><label for="dot">Punktgröße</label><div class="inp"><input type="number" id="dot" step="0.1" min="0.2"><span>mm</span></div></div>
+          <div class="field"><label for="color">Farbe</label><input type="color" id="color"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="sheets">A4-Blätter</label><input type="number" id="sheets" step="1" min="1"></div>
+          <label class="chk end"><input type="checkbox" id="duplex"> Beidseitig drucken</label>
+        </div>
+        <label class="chk"><input type="checkbox" id="marks"> Schnittmarken</label>
+        <details class="more">
+          <summary>Weitere Optionen</summary>
+          <div class="field narrow"><label for="rand">Innenrand</label><div class="inp"><input type="number" id="rand" step="1" min="0"><span>mm</span></div></div>
+          <p class="hint">Ein leerer Rand auf jeder Seite. Mit 0 läuft das Muster bis in den Beschnitt.</p>
+        </details>
+      </div>
+      <div class="pv"><div class="pvbox" id="pvPage"></div><span>Ein A4-Blatt</span></div>
+    </div>
+    <div class="summary" id="innerInfo"></div>
+  </section>
+
+  <section class="panel">
+    <h2><span class="num">3</span>Umschlag</h2>
+    <p class="sub">Wähle ein Bild, schiebe und zoome es zurecht und füge Text hinzu.</p>
+    <div class="row src">
+      <label class="drop"><input type="file" id="file" accept="image/*"><b>Bild auswählen</b><br>oder irgendwo auf die Seite ziehen</label>
+      <div class="field">
+        <label for="url">…oder Bild- oder Pinterest-Adresse einfügen</label>
+        <div class="row url"><input type="text" id="url" placeholder="https://i.pinimg.com/…"><button class="btn sec" id="loadUrl">Laden</button></div>
+        <div class="msg" id="msg"></div>
+      </div>
+    </div>
+    <div class="stagebox" id="stagebox">
+      <div class="stage empty" id="stage"></div>
+      <button class="lock" id="lock"><svg viewBox="0 0 16 16"><path d="M5 8V5a3 3 0 0 1 6 0v3"/><rect x="3" y="7.5" width="10" height="7" rx="1.8"/></svg><span>Entsperren</span></button>
+    </div>
+    <div id="imgTools">
+      <div class="tools">
+        <label class="lbl" for="zoom">Zoom</label>
+        <input type="range" id="zoom" min="10" max="600" step="1">
+        <div class="icons">
+          <button class="btn sec" id="rotL" title="Nach links drehen" aria-label="Nach links drehen"><svg viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></svg></button>
+          <button class="btn sec" id="rotR" title="Nach rechts drehen" aria-label="Nach rechts drehen"><svg viewBox="0 0 16 16"><g transform="matrix(-1 0 0 1 16 0)"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></g></svg></button>
+          <button class="btn sec" id="flipH" title="Horizontal spiegeln" aria-label="Horizontal spiegeln"><svg viewBox="0 0 16 16"><path d="M6 4v8H1.5zM10 4v8h4.5z"/><path d="M8 1.5v13" stroke-dasharray="1.5 1.5"/></svg></button>
+          <button class="btn sec" id="flipV" title="Vertikal spiegeln" aria-label="Vertikal spiegeln"><svg viewBox="0 0 16 16"><g transform="rotate(90 8 8)"><path d="M6 4v8H1.5zM10 4v8h4.5z"/><path d="M8 1.5v13" stroke-dasharray="1.5 1.5"/></g></svg></button>
+        </div>
+      </div>
+      <div class="btns">
+        <button class="btn sec" id="fitAll">Ganzen Umschlag füllen</button>
+        <button class="btn sec" id="fitFront">Nur Vorderseite füllen</button>
+        <button class="btn sec" id="fitContain">Ganzes Bild zeigen</button>
+        <button class="btn sec" id="addText">+ Text</button>
+        <label class="btn sec swatch">Hintergrund <input type="color" id="coverBg"></label>
+      </div>
+      <p class="hint">Entsperre den Umschlag, dann verschiebst du das Bild durch Ziehen und zoomst durch Scrollen oder mit zwei Fingern. Nach 3 Sekunden ohne Änderung wird er wieder gesperrt. Der helle Rand ist der Beschnitt, das farbige Band der Rücken mit seinen Falzlinien. Tippe auf einen Text, um ihn zu bearbeiten. Der Hintergrund ist überall zu sehen, wo das Bild nicht hinreicht.</p>
+    </div>
+    <div class="txt" id="txtTools" hidden>
+      <textarea id="tText" rows="2" aria-label="Text"></textarea>
+      <div class="r">
+        <select id="tFont" aria-label="Schriftart"></select>
+        <div class="inp"><input type="number" id="tSize" step="1" min="4" aria-label="Schriftgröße"><span>pt</span></div>
+        <label class="btn sec swatch">Farbe <input type="color" id="tColor"></label>
+        <div class="seg" id="tStyle">
+          <button data-v="bold" title="Fett" aria-label="Fett"><b>B</b></button>
+          <button data-v="italic" title="Kursiv" aria-label="Kursiv"><i>I</i></button>
+          <button data-v="underline" title="Unterstrichen" aria-label="Unterstrichen"><u>U</u></button>
+        </div>
+      </div>
+      <div class="r">
+        <div class="seg" id="tAlign">
+          <button data-v="left" title="Linksbündig" aria-label="Linksbündig"><svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h7M2 12h10"/></svg></button>
+          <button data-v="center" title="Zentriert" aria-label="Zentriert"><svg viewBox="0 0 16 16"><path d="M2 4h12M4.5 8h7M3 12h10"/></svg></button>
+          <button data-v="right" title="Rechtsbündig" aria-label="Rechtsbündig"><svg viewBox="0 0 16 16"><path d="M2 4h12M7 8h7M4 12h10"/></svg></button>
+        </div>
+        <div class="seg">
+          <button id="tCenterX" title="Waagerecht mittig" aria-label="Waagerecht mittig"><svg viewBox="0 0 16 16"><path d="M8 1.5v4M8 10.5v4"/><rect x="3" y="5.5" width="10" height="5" rx="1"/></svg></button>
+          <button id="tCenterY" title="Senkrecht mittig" aria-label="Senkrecht mittig"><svg viewBox="0 0 16 16"><path d="M1 8h2.5M12.5 8H15"/><rect x="3.5" y="4" width="9" height="8" rx="1"/></svg></button>
+          <button id="tTurn" title="Drehen" aria-label="Drehen"><svg viewBox="0 0 16 16"><g transform="matrix(-1 0 0 1 16 0)"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></g></svg></button>
+        </div>
+        <button class="btn sec" id="tDel">Löschen</button>
+        <button class="btn" id="tDone">Fertig</button>
+      </div>
+      <p class="hint">Ziehe den Text, um ihn zu verschieben. Er rastet in der Mitte von Vorderseite, Rückseite und Rücken ein. Die Knöpfe zum Zentrieren beziehen sich auf den Teil, auf dem der Text liegt.</p>
+    </div>
+    <label class="chk"><input type="checkbox" id="spineAuto"> Rückenbreite berechnen</label>
+    <div class="row4">
+      <div class="field"><label for="spine">Rücken</label><div class="inp"><input type="number" id="spine" step="0.5" min="0"><span>mm</span></div></div>
+      <div class="field" id="f-paperTh"><label for="paperTh">Papierdicke</label><div class="inp"><input type="number" id="paperTh" step="0.01" min="0"><span>mm</span></div></div>
+      <div class="field" id="f-coverTh"><label for="coverTh">Zugabe Umschlag</label><div class="inp"><input type="number" id="coverTh" step="0.1" min="0"><span>mm</span></div></div>
+    </div>
+    <p class="hint" id="spineHint">80 g/m² ≈ 0,10 mm · 100 g/m² ≈ 0,12 mm · 120 g/m² ≈ 0,15 mm. Die Zugabe schafft Platz für das Umschlagpapier.</p>
+    <label class="chk"><input type="checkbox" id="coverDir"> In derselben Richtung wie die Seiten drucken</label>
+    <p class="hint">Wenn es passt. Der Rücken liegt dann genauso zur Laufrichtung des Papiers wie der Falz der Seiten. Das kann das Falzen des Umschlags erleichtern.</p>
+    <div class="summary" id="coverInfo"></div>
+  </section>
+
+  <section class="panel">
+    <h2><span class="num">4</span>Drucken</h2>
+    <p class="sub">Prüfe beide Blätter, dann drucke sie oder speichere sie als PDF.</p>
+    <div class="previews">
+      <div class="pv"><div class="pvbox" id="pvInner"></div><span id="pvInnerLab"></span></div>
+      <div class="pv"><div class="pvbox" id="pvCover"></div><span>Umschlag · A4</span></div>
+    </div>
+    <div class="btns center">
+      <button class="btn" id="printInner">Seiten drucken</button>
+      <button class="btn" id="printCover">Umschlag drucken</button>
+      <button class="btn sec" id="printAll">Alles in einem PDF</button>
+    </div>
+    <div class="summary calbar"><span id="calInfo"></span><button class="btn sec" id="calOpen">Drucker kalibrieren</button></div>
+    <ul class="tips">
+      <li>Stelle im Druckdialog die Skalierung auf <b>100 % / Tatsächliche Größe</b>, die Ränder auf <b>Keine</b> und schalte Kopf- und Fußzeilen aus.</li>
+      <li>Für ein PDF wähle als Ziel „Als PDF speichern“.</li>
+      <li>Beidseitig drucken: über die lange Kante wenden. Das Muster ist zentriert, deshalb passen Vorder- und Rückseite übereinander.</li>
+      <li>Nach dem Drucken: <a href="how-it-works.html">So falzt, schneidest und nähst du dein Heft</a>.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">Alles läuft in deinem Browser. Deine Einstellungen und dein Umschlagbild werden nur auf diesem Gerät gespeichert. <a href="privacy.html">Datenschutz</a></footer>
+
+<dialog class="panel cal" id="cal" closedby="any" aria-labelledby="calTitle">
+  <form class="top-x" method="dialog"><button class="x" aria-label="Schließen">×</button></form>
+  <h2 id="calTitle">Drucker kalibrieren</h2>
+  <p>Drucker sind oft etwas ungenau: Linien werden ein bisschen zu lang, die Ränder bleiben leer oder die Rückseite passt nicht zur Vorderseite. Drucke ein Testblatt, lies fünf Zahlen davon ab und Quire korrigiert deine Ausdrucke. Das brauchst du nur einmal pro Drucker zu machen. Die Werte werden auf diesem Gerät gespeichert und gelten für alle Hefte.</p>
+  <button class="btn" id="printTest">Testblatt drucken</button>
+  <p class="hint">Drucke es wie deine Hefte: normales A4, Skalierung <b>100 % / Tatsächliche Größe</b>, Ränder <b>Keine</b>, ohne Kopf- und Fußzeilen, beidseitig, über die lange Kante gewendet. Nicht „An Seite anpassen“ und nicht randlos. Die Pfeile vorne und hinten müssen in dieselbe Richtung zeigen. Die Nummern unten entsprechen denen auf dem Blatt.</p>
+
+  <div class="step">
+    <h3><span class="num">1</span>Größe</h3>
+    <div class="art wide" id="art1" aria-hidden="true"></div>
+    <p>Miss die lange waagerechte und die lange senkrechte Linie mit einem Lineal, von der Mitte des einen Endstrichs bis zur Mitte des anderen. Am einfachsten nimmst du bei beiden Strichen dieselbe Kante: linke bis linke, obere bis obere. Beide Linien sollten 160 mm lang sein. Trage so genau wie möglich ein, was du misst.</p>
+    <div class="row">
+      <div class="field"><label for="calW">Linie Breite</label><div class="inp"><input type="number" id="calW" step="0.1" min="0"><span>mm</span></div></div>
+      <div class="field"><label for="calH">Linie Höhe</label><div class="inp"><input type="number" id="calH" step="0.1" min="0"><span>mm</span></div></div>
+    </div>
+    <p class="hint warn" id="calWarn" hidden>Ein Wert, der mehr als 1,5 % abweicht, wird nicht korrigiert. Wahrscheinlich hat der Druckdialog das Blatt skaliert: Drucke es noch mal mit 100 %.</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="num">2</span>Ränder</h3>
+    <div class="art wide" id="art2" aria-hidden="true"></div>
+    <p>An jedem Rand ist eine Reihe nummerierter Linien. Die, die dein Drucker nicht erreicht, fehlen. Suche an allen vier Rändern beider Blattseiten die kleinste Zahl, deren Linie gedruckt ist. Trage die größte dieser acht Zahlen ein. Auf dem Bild ist es an diesem Rand 3,5.</p>
+    <div class="field narrow"><label for="margin">Druckrand</label><div class="inp"><input type="number" id="margin" step="0.5" min="0"><span>mm</span></div></div>
+    <p class="hint">Nimm die gedruckte Zahl, nicht den Abstand zur Papierkante. Wenn sich beide unterscheiden, liegt das Papier nicht da, wo der Drucker es erwartet. Beim beidseitigen Druck verschiebt das Vorder- und Rückseite gegeneinander. Das korrigiert Schritt 3, es kostet aber nutzbaren Platz. Sind es mehr als etwa 2 mm, prüfe zuerst die Papierführung und ob als Papiergröße A4 eingestellt ist, und drucke das Blatt noch mal.</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="num">3</span>Vorder- und Rückseite</h3>
+    <div class="art" id="art3" aria-hidden="true"></div>
+    <p>Halte das Blatt mit der Vorderseite zu dir gegen das Licht. Die roten Linien der Rückseite scheinen durch. Lies ab, wo sie die beiden Skalen in der Blattmitte kreuzen, mit Vorzeichen. Auf dem Bild sind es +1,5 waagerecht und −1 senkrecht. Quire verschiebt Vorder- und Rückseite jeweils um die Hälfte, sodass sie sich treffen.</p>
+    <div class="row">
+      <div class="field"><label for="backX">Waagerecht (obere Skala)</label><div class="inp"><input type="number" id="backX" step="0.5"><span>mm</span></div></div>
+      <div class="field"><label for="backY">Senkrecht (linke Skala)</label><div class="inp"><input type="number" id="backY" step="0.5"><span>mm</span></div></div>
+    </div>
+    <p class="hint">Wenn die beiden Schräglauf-Skalen deutlich andere Werte zeigen, wird das Papier schief eingezogen. Das kann Quire nicht korrigieren. Der Versatz schwankt auch etwas von Blatt zu Blatt. Es hilft also, ein paar zu drucken und den Mittelwert einzutragen.</p>
+  </div>
+
+  <div class="step">
+    <h3>Ergebnis prüfen</h3>
+    <p>Drucke das Blatt noch mal, jetzt mit deiner Korrektur. Die Linien sollten 160 mm lang sein und die roten Linien sich bei 0 kreuzen. Trage keine Werte von diesem Blatt ein: Nur das unkorrigierte zählt.</p>
+    <div class="btns"><button class="btn sec" id="printCheck">Mit Korrektur drucken</button><form method="dialog"><button class="btn">Fertig</button></form></div>
+  </div>
+</dialog>
+
+<div id="print"></div>
+<script src="../de.js"></script>
+<script src="../state.js"></script>
+<script src="../calibration.js"></script>
+<script src="../sheets.js"></script>
+<script src="../text.js"></script>
+<script src="../app.js"></script>
+</body>
+</html>
