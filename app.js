@@ -3,7 +3,7 @@ const PAPER = { A4: [297, 210], A3: [420, 297] };
 const SPACING = { lines: 7, grid: 5, dots: 5, blank: 5 };
 const DEF = { preset: '85x135', w: 85, h: 135, bleed: 3, margin: 5, gap: 0, pattern: 'dots', spacing: 5, rand: 0,
   color: '#9c9c9c', lw: 0.2, dot: 0.6, sheets: 10, duplex: true, marks: true, paperTh: 0.1, coverTh: 0.8,
-  spine: 5, spineAuto: true, coverPaper: 'A4', fold: true, coverBg: '#ffffff', imgSrc: '', zoom: 1, offX: 0, offY: 0 };
+  spine: 5, spineAuto: true, coverPaper: 'A4', fold: true, coverBg: '#ffffff', imgSrc: '', zoom: 1, offX: 0, offY: 0, turn: 0, mirror: false };
 const KEY = 'quire';
 let S = { ...DEF };
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
@@ -39,9 +39,10 @@ function cover() {
   const fitsA4 = Cw <= 297 - 2 * S.margin && Ch <= 210 - 2 * S.margin;
   return { sp, b, Cw, Ch, pw, ph, fits, fitsA4, leaves };
 }
+const imgSize = () => S.turn % 2 ? [IMG.nh, IMG.nw] : [IMG.nw, IMG.nh];
 function imgGeom(C) {
   if (!IMG.ok) return null;
-  const a = IMG.nw / IMG.nh;
+  const [nw, nh] = imgSize(), a = nw / nh;
   const bw = a > C.Cw / C.Ch ? C.Ch * a : C.Cw, bh = bw / a;
   const w = bw * S.zoom, h = bh * S.zoom;
   return { w, h, x: C.Cw / 2 + S.offX - w / 2, y: C.Ch / 2 + S.offY - h / 2, bw };
@@ -114,7 +115,11 @@ function coverBox(C, overlay) {
   }
   return `<div class="cov" style="width:${f(C.Cw)}mm;height:${f(C.Ch)}mm">${h}</div>`;
 }
-function imgStyle(g) { return `left:${f(g.x)}mm;top:${f(g.y)}mm;width:${f(g.w)}mm;height:${f(g.h)}mm`; }
+function imgStyle(g) {
+  // the CSS box is the unrotated image around the same center
+  const [w, h] = S.turn % 2 ? [g.h, g.w] : [g.w, g.h];
+  return `left:${f(g.x + (g.w - w) / 2)}mm;top:${f(g.y + (g.h - h) / 2)}mm;width:${f(w)}mm;height:${f(h)}mm;transform:scaleX(${S.mirror ? -1 : 1}) rotate(${S.turn * 90}deg)`;
+}
 function coverSheet(C, portrait) {
   const x0 = (C.pw - C.Cw) / 2, y0 = (C.ph - C.Ch) / 2, b = C.b;
   let h = `<div class="a" style="left:${f(x0)}mm;top:${f(y0)}mm">${coverBox(C, 0)}</div>`;
@@ -146,6 +151,7 @@ function updateImg() {
   const C = cover(), g = imgGeom(C), el = $('stage').querySelector('.cimg');
   if (el && g) el.setAttribute('style', imgStyle(g));
   $('zoom').value = Math.round(S.zoom * 100);
+  armLock();
 }
 function preview(box, html, pw, ph, maxW) {
   const k = Math.min(maxW / pw, 340 / ph);
@@ -189,7 +195,7 @@ function loadSrc(src, keep, onfail) {
   const im = new Image();
   im.onload = () => {
     IMG.ok = true; IMG.nw = im.naturalWidth; IMG.nh = im.naturalHeight; S.imgSrc = src;
-    if (!keep) { S.zoom = 1; S.offX = 0; S.offY = 0; }
+    if (!keep) { S.zoom = 1; S.offX = 0; S.offY = 0; S.turn = 0; S.mirror = false; setLock(false); }
     msg(`Image loaded (${IMG.nw} × ${IMG.nh} px)`); save(); renderAll();
   };
   im.onerror = () => onfail ? onfail() : msg('Couldn’t load the image. Is it a direct image address?', true);
@@ -229,12 +235,25 @@ function setZoom(z) { S.zoom = Math.min(8, Math.max(0.05, z)); }
 function fitPanel(px, pwid) {
   const C = cover(), g = imgGeom(C);
   if (!g) return;
-  const s = Math.max(pwid / IMG.nw, C.Ch / IMG.nh);
-  setZoom(IMG.nw * s / g.bw); S.offX = px - C.Cw / 2; S.offY = 0;
+  const [nw, nh] = imgSize(), s = Math.max(pwid / nw, C.Ch / nh);
+  setZoom(nw * s / g.bw); S.offX = px - C.Cw / 2; S.offY = 0;
 }
 const ptrs = new Map();
 const st = $('stage');
-st.addEventListener('pointerdown', e => { if (!IMG.ok) return; st.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); st.style.cursor = 'grabbing'; });
+let locked = true, lockT;
+function setLock(on) {
+  clearTimeout(lockT);
+  locked = on;
+  st.classList.toggle('unlocked', !on);
+  $('lock').lastChild.textContent = on ? 'Unlock' : 'Lock';
+}
+function armLock() {
+  clearTimeout(lockT);
+  lockT = setTimeout(() => ptrs.size ? armLock() : setLock(true), 3000);
+}
+$('lock').onclick = () => { setLock(!locked); if (!locked) armLock(); };
+['fitAll', 'fitFront', 'fitContain', 'rotL', 'rotR', 'flipH', 'flipV'].forEach(id => $(id).addEventListener('click', armLock));
+st.addEventListener('pointerdown', e => { if (locked) return; st.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); st.style.cursor = 'grabbing'; });
 st.addEventListener('pointermove', e => {
   const p = ptrs.get(e.pointerId); if (!p) return;
   if (ptrs.size === 1) { S.offX += (e.clientX - p.x) / K; S.offY += (e.clientY - p.y) / K; }
@@ -247,12 +266,18 @@ st.addEventListener('pointermove', e => {
 });
 const up = e => { if (ptrs.delete(e.pointerId) && !ptrs.size) { st.style.cursor = ''; save(); renderAll(); } };
 st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
-st.addEventListener('wheel', e => { if (!IMG.ok) return; e.preventDefault(); setZoom(S.zoom * Math.exp(-e.deltaY * 0.0015)); updateImg(); clearTimeout(st._t); st._t = setTimeout(() => { save(); renderAll(); }, 250); }, { passive: false });
+st.addEventListener('wheel', e => { if (locked) return; e.preventDefault(); setZoom(S.zoom * Math.exp(-e.deltaY * 0.0015)); updateImg(); clearTimeout(st._t); st._t = setTimeout(() => { save(); renderAll(); }, 250); }, { passive: false });
 $('zoom').addEventListener('input', e => { setZoom(e.target.value / 100); updateImg(); });
 $('zoom').addEventListener('change', () => { save(); renderAll(); });
 $('fitAll').onclick = () => { S.zoom = 1; S.offX = 0; S.offY = 0; save(); renderAll(); };
 $('fitFront').onclick = () => { const C = cover(); fitPanel((C.b + S.w + C.sp + C.Cw) / 2, S.w + C.b); save(); renderAll(); };
-$('fitContain').onclick = () => { const C = cover(), g = imgGeom(C); if (!g) return; const s = Math.min(C.Cw / IMG.nw, C.Ch / IMG.nh); setZoom(IMG.nw * s / g.bw); S.offX = 0; S.offY = 0; save(); renderAll(); };
+$('fitContain').onclick = () => { const C = cover(), g = imgGeom(C); if (!g) return; const [nw, nh] = imgSize(), s = Math.min(C.Cw / nw, C.Ch / nh); setZoom(nw * s / g.bw); S.offX = 0; S.offY = 0; save(); renderAll(); };
+function turnImg(q) { S.turn = (S.turn + q + 4) % 4; save(); renderAll(); }
+// mirroring is applied after the turn, so on a mirrored image the turn runs the other way
+$('rotL').onclick = () => turnImg(S.mirror ? 1 : -1);
+$('rotR').onclick = () => turnImg(S.mirror ? -1 : 1);
+$('flipH').onclick = () => { S.mirror = !S.mirror; turnImg(0); };
+$('flipV').onclick = () => { S.mirror = !S.mirror; turnImg(2); };
 
 /* ---------- Inputs ---------- */
 const NUM = ['w', 'h', 'bleed', 'margin', 'gap', 'spacing', 'rand', 'lw', 'dot', 'sheets', 'paperTh', 'coverTh', 'spine'];
@@ -313,7 +338,7 @@ async function refreshList(sel) {
 async function loadConfig(name) {
   const c = await idb('readonly', s => s.get(name));
   if (!c) return;
-  S = { ...DEF, ...c.S }; IMG.ok = false;
+  S = { ...DEF, ...c.S }; IMG.ok = false; setLock(true);
   $('cfgName').value = name; msg(''); syncInputs(); save(); renderAll();
   if (S.imgSrc) loadSrc(S.imgSrc, true, () => { S.imgSrc = ''; renderAll(); });
   cfgMsg(`Loaded “${name}”.`);

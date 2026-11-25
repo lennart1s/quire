@@ -99,10 +99,26 @@ details.more summary { cursor: pointer; font-size: 13px; font-weight: 600; color
 .btn.sec:hover { filter: none; border-color: #d3c3aa }
 .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px }
 .btns.center { justify-content: center; margin-top: 20px }
-.tools .lbl { margin-top: 12px }
+.tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px }
+.tools .lbl { margin-top: 12px; width: 100% }
+.tools input { flex: 1 1 200px; width: auto; min-height: 42px }
+.icons { display: flex; gap: 8px }
+.icons .btn { padding: 0 11px }
+.icons svg { display: block; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round }
 
-.stage { position: relative; background: repeating-conic-gradient(#e6ddd0 0 25%, #f8f3ec 0 50%) 0 0 / 16px 16px; border-radius: 10px; overflow: hidden; touch-action: none; cursor: grab; user-select: none }
-.stage.empty { cursor: default }
+.stage { position: relative; background: repeating-conic-gradient(#e6ddd0 0 25%, #f8f3ec 0 50%) 0 0 / 16px 16px; border-radius: 10px; overflow: hidden; user-select: none }
+.stage.unlocked { touch-action: none; cursor: grab }
+.stagebox { position: relative }
+.lock { position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 6px; border: 0; border-radius: 9px; background: #fff; color: var(--acc); box-shadow: 0 1px 2px rgba(47, 38, 32, .2), 0 4px 14px rgba(47, 38, 32, .18); font: inherit; font-size: 13px; font-weight: 600; padding: 8px 12px 8px 10px; cursor: pointer; transition: background .15s, color .15s }
+.lock:hover { background: var(--acc-soft) }
+.lock svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round }
+.lock rect { fill: currentColor; stroke: none }
+.lock path { transform-origin: 11px 8px; transition: transform .15s }
+@media (max-width: 640px) { .lock { top: auto; bottom: 12px; right: 12px } }
+.stage.empty + .lock { display: none }
+.stage.unlocked + .lock { background: var(--acc); color: #fff }
+.stage.unlocked + .lock:hover { filter: brightness(1.1) }
+.stage.unlocked + .lock path { transform: rotate(28deg) }
 .stage .ph { position: absolute; inset: 0; display: grid; place-items: center; color: var(--mute); font-size: 14px; text-align: center; padding: 20px; z-index: 2 }
 .stage .ph span { background: var(--panel); padding: 6px 12px; border-radius: 99px }
 .scaled { position: absolute; left: 0; top: 0; transform-origin: 0 0 }

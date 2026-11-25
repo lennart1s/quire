@@ -21,7 +21,7 @@ Quire is a small, self-contained web page. Pick a size and a page pattern, place
 - **As many pages per A4 sheet as fit:** Quire calculates the layout and rotates pages when more fit that way.
 - **Folded spreads or single pages:** spreads print two pages side by side with fold marks. Single pages are cut out one by one.
 - **Patterns:** lines, grid, dots or blank, with adjustable spacing, color and line or dot size. For double-sided printing the pattern is centered, so front and back line up.
-- **Cover with spine:** upload an image or paste an image or Pinterest URL, then drag and zoom it into place. Back, front and spine are marked. The spine width is calculated from the number of sheets and the paper thickness.
+- **Cover with spine:** upload an image or paste an image or Pinterest URL, then drag, zoom, rotate and mirror it into place. Back, front and spine are marked. The spine width is calculated from the number of sheets and the paper thickness.
 - **Crop and fold marks** on both pages and cover.
 - **Saved notebooks:** save settings, including the cover image, and restore them later from a dropdown.
 

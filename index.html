@@ -102,17 +102,26 @@
         <div class="msg" id="msg"></div>
       </div>
     </div>
-    <div class="stage empty" id="stage"></div>
+    <div class="stagebox">
+      <div class="stage empty" id="stage"></div>
+      <button class="lock" id="lock"><svg viewBox="0 0 16 16"><path d="M5 8V5a3 3 0 0 1 6 0v3"/><rect x="3" y="7.5" width="10" height="7" rx="1.8"/></svg><span>Unlock</span></button>
+    </div>
     <div class="tools">
       <label class="lbl" for="zoom">Zoom</label>
       <input type="range" id="zoom" min="10" max="600" step="1">
+      <div class="icons">
+        <button class="btn sec" id="rotL" title="Rotate left" aria-label="Rotate left"><svg viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></svg></button>
+        <button class="btn sec" id="rotR" title="Rotate right" aria-label="Rotate right"><svg viewBox="0 0 16 16"><g transform="matrix(-1 0 0 1 16 0)"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></g></svg></button>
+        <button class="btn sec" id="flipH" title="Mirror horizontally" aria-label="Mirror horizontally"><svg viewBox="0 0 16 16"><path d="M6 4v8H1.5zM10 4v8h4.5z"/><path d="M8 1.5v13" stroke-dasharray="1.5 1.5"/></svg></button>
+        <button class="btn sec" id="flipV" title="Mirror vertically" aria-label="Mirror vertically"><svg viewBox="0 0 16 16"><g transform="rotate(90 8 8)"><path d="M6 4v8H1.5zM10 4v8h4.5z"/><path d="M8 1.5v13" stroke-dasharray="1.5 1.5"/></g></svg></button>
+      </div>
     </div>
     <div class="btns">
       <button class="btn sec" id="fitAll">Fill whole cover</button>
       <button class="btn sec" id="fitFront">Fill front only</button>
       <button class="btn sec" id="fitContain">Show whole image</button>
     </div>
-    <p class="hint">Drag to move, scroll or pinch to zoom. The light border is the bleed, the colored band is the spine with its fold lines.</p>
+    <p class="hint">Unlock the cover, then drag to move, scroll or pinch to zoom. It locks again after 3 seconds without changes. The light border is the bleed, the colored band is the spine with its fold lines.</p>
     <label class="chk"><input type="checkbox" id="spineAuto"> Calculate spine width</label>
     <div class="row4">
       <div class="field"><label for="spine">Spine</label><div class="inp"><input type="number" id="spine" step="0.5" min="0"><span>mm</span></div></div>
