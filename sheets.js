@@ -15,8 +15,10 @@ function cover() {
   const L = layout(), leaves = L.n * S.sheets * (S.fold ? 2 : 1);
   const sp = S.spineAuto ? f(leaves * S.paperTh + S.coverTh) : +S.spine;
   const b = S.bleed, Cw = 2 * S.w + sp + 2 * b, Ch = S.h + 2 * b;
-  const { sx, sy } = correction(false); // the cover's width runs along the height of the portrait sheet
-  return { sp, b, Cw, Ch, leaves, fits: Cw <= printable(297, sy, 0) && Ch <= printable(210, sx, 0) };
+  const { sx, sy } = correction(false), pw = printable(210, sx, 0), ph = printable(297, sy, 0);
+  // normally the cover's width runs along the height of the portrait sheet, upright along its width like pages that aren't rotated
+  const upright = S.coverDir && !L.rot && Cw <= pw && Ch <= ph;
+  return { sp, b, Cw, Ch, leaves, upright, likePages: upright !== L.rot, fits: upright || Cw <= ph && Ch <= pw };
 }
 const imgSize = () => S.turn % 2 ? [IMG.nh, IMG.nw] : [IMG.nw, IMG.nh];
 function imgGeom(C) {
@@ -116,8 +118,9 @@ function imgStyle(g) {
   const [w, h] = S.turn % 2 ? [g.h, g.w] : [g.w, g.h];
   return `left:${f(g.x + (g.w - w) / 2)}mm;top:${f(g.y + (g.h - h) / 2)}mm;width:${f(w)}mm;height:${f(h)}mm;transform:scaleX(${S.mirror ? -1 : 1}) rotate(${S.turn * 90}deg)`;
 }
+const coverPaper = C => C.upright ? [210, 297] : [297, 210];
 function coverSheet(C, portrait, tf = 'none') {
-  const pw = 297, ph = 210, x0 = (pw - C.Cw) / 2, y0 = (ph - C.Ch) / 2, b = C.b;
+  const [pw, ph] = coverPaper(C), x0 = (pw - C.Cw) / 2, y0 = (ph - C.Ch) / 2, b = C.b;
   let h = `<div class="a" style="left:${f(x0)}mm;top:${f(y0)}mm">${coverBox(C, 0)}</div>`;
   let m = '';
   if (S.marks) m += marksSVG(pw, ph, [x0 + b, x0 + C.Cw - b], [y0 + b, y0 + C.Ch - b], y0, y0 + C.Ch, x0, x0 + C.Cw);
@@ -127,9 +130,10 @@ function coverSheet(C, portrait, tf = 'none') {
   fx.forEach(x => { if (yA - 6 > 0.5) d += `M${f(x)} ${f(yA)}V${f(yA - 6)}`; if (yB + 6 < ph - 0.5) d += `M${f(x)} ${f(yB)}V${f(yB + 6)}`; });
   if (d) m += `<path d="${d}" stroke="#000" stroke-width="0.15" stroke-dasharray="1 0.8" fill="none"/>`;
   const c = correction(false);
-  if (isCorrected(c)) m += calNote(x0, y0, (pw - printable(pw, c.sy, 0)) / 2, (ph - printable(ph, c.sx, 0)) / 2, S.w, S.h);
+  const [cx, cy] = C.upright ? [c.sx, c.sy] : [c.sy, c.sx];
+  if (isCorrected(c)) m += calNote(x0, y0, (pw - printable(pw, cx, 0)) / 2, (ph - printable(ph, cy, 0)) / 2, S.w, S.h);
   if (m) h += `<svg class="a" style="left:0;top:0" width="${pw}mm" height="${ph}mm" viewBox="0 0 ${pw} ${ph}">${m}</svg>`;
-  if (portrait) // landscape cover rotated onto a portrait sheet so every PDF page has the same orientation
+  if (portrait && !C.upright) // landscape cover rotated onto a portrait sheet so every PDF page has the same orientation
     return sheetHTML(ph, pw, `<div class="a" style="left:0;top:0;width:${pw}mm;height:${ph}mm;transform-origin:0 0;transform:rotate(90deg) translateY(-100%)">${h}</div>`, tf);
   return sheetHTML(pw, ph, h, tf);
 }

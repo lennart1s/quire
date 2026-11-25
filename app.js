@@ -38,6 +38,7 @@ function renderAll() {
   $('spine').disabled = S.spineAuto;
   if (S.spineAuto) $('spine').value = C.sp;
   let ci = `Cover: ${f(C.Cw)} × ${f(C.Ch)} mm incl. bleed · spine ≈ ${C.sp} mm (${C.leaves} leaves) · printed on A4`;
+  if (S.coverDir && C.fits) ci += C.likePages ? ' in the same direction as the pages' : ` · <span class="warn">too wide for the direction of the pages, printed sideways</span>`;
   if (!C.fits) ci += ` · <span class="warn">doesn’t fit on A4. Reduce size or bleed.</span>`;
   $('coverInfo').innerHTML = ci;
   renderCal();
@@ -46,7 +47,7 @@ function renderAll() {
   const sheet = innerSheet(L);
   preview($('pvPage'), sheet, 210, 297, Math.max(180, $('pvPage').parentElement.clientWidth || 240));
   preview($('pvInner'), sheet, 210, 297, maxW);
-  preview($('pvCover'), coverSheet(C), 297, 210, maxW);
+  preview($('pvCover'), coverSheet(C), ...coverPaper(C), maxW);
   $('pvInnerLab').textContent = 'Pages · A4' + (S.fold ? ' · folded spreads' : '');
   $('zoom').value = Math.round(S.zoom * 100);
 }
@@ -144,7 +145,7 @@ $('flipV').onclick = () => { S.mirror = !S.mirror; turnImg(2); };
 
 /* ---------- Inputs ---------- */
 const NUM = ['w', 'h', 'bleed', 'gap', 'spacing', 'rand', 'lw', 'dot', 'sheets', 'paperTh', 'coverTh', 'spine'];
-const BOOL = ['duplex', 'marks', 'spineAuto'];
+const BOOL = ['duplex', 'marks', 'spineAuto', 'coverDir'];
 const TXT = ['color', 'coverBg', 'preset'];
 NUM.forEach(k => { $(k).addEventListener('input', e => { const v = parseFloat(String(e.target.value).replace(',', '.')); if (!isNaN(v)) { S[k] = v; if (k === 'w' || k === 'h') { S.preset = 'custom'; $('preset').value = 'custom'; } save(); renderAll(); } }); });
 BOOL.forEach(k => { $(k).addEventListener('change', e => { S[k] = e.target.checked; save(); renderAll(); }); });
