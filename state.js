@@ -3,7 +3,7 @@ const PX = 96 / 25.4;
 const SPACING = { lines: 7, grid: 5, dots: 5, blank: 5 };
 const DEF = { preset: '85x135', w: 85, h: 135, bleed: 3, gap: 0, pattern: 'dots', spacing: 5, rand: 0,
   color: '#9c9c9c', lw: 0.2, dot: 0.6, sheets: 10, duplex: true, marks: true, paperTh: 0.1, coverTh: 0.8,
-  spine: 5, spineAuto: true, fold: true, coverBg: '#ffffff', imgSrc: '', zoom: 1, offX: 0, offY: 0, turn: 0, mirror: false };
+  spine: 5, spineAuto: true, fold: true, coverBg: '#ffffff', imgSrc: '', zoom: 1, offX: 0, offY: 0, turn: 0, mirror: false, texts: [] };
 const KEY = 'quire';
 let S = { ...DEF };
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}

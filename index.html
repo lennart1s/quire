@@ -89,7 +89,7 @@
 
   <section class="panel">
     <h2><span class="num">3</span>Cover</h2>
-    <p class="sub">Pick an image, then drag and zoom it into place.</p>
+    <p class="sub">Pick an image, drag and zoom it into place, and add text.</p>
     <div class="row src">
       <label class="drop"><input type="file" id="file" accept="image/*"><b>Choose an image</b><br>or drop it anywhere on the page</label>
       <div class="field">
@@ -98,26 +98,58 @@
         <div class="msg" id="msg"></div>
       </div>
     </div>
-    <div class="stagebox">
+    <div class="stagebox" id="stagebox">
       <div class="stage empty" id="stage"></div>
       <button class="lock" id="lock"><svg viewBox="0 0 16 16"><path d="M5 8V5a3 3 0 0 1 6 0v3"/><rect x="3" y="7.5" width="10" height="7" rx="1.8"/></svg><span>Unlock</span></button>
     </div>
-    <div class="tools">
-      <label class="lbl" for="zoom">Zoom</label>
-      <input type="range" id="zoom" min="10" max="600" step="1">
-      <div class="icons">
-        <button class="btn sec" id="rotL" title="Rotate left" aria-label="Rotate left"><svg viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></svg></button>
-        <button class="btn sec" id="rotR" title="Rotate right" aria-label="Rotate right"><svg viewBox="0 0 16 16"><g transform="matrix(-1 0 0 1 16 0)"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></g></svg></button>
-        <button class="btn sec" id="flipH" title="Mirror horizontally" aria-label="Mirror horizontally"><svg viewBox="0 0 16 16"><path d="M6 4v8H1.5zM10 4v8h4.5z"/><path d="M8 1.5v13" stroke-dasharray="1.5 1.5"/></svg></button>
-        <button class="btn sec" id="flipV" title="Mirror vertically" aria-label="Mirror vertically"><svg viewBox="0 0 16 16"><g transform="rotate(90 8 8)"><path d="M6 4v8H1.5zM10 4v8h4.5z"/><path d="M8 1.5v13" stroke-dasharray="1.5 1.5"/></g></svg></button>
+    <div id="imgTools">
+      <div class="tools">
+        <label class="lbl" for="zoom">Zoom</label>
+        <input type="range" id="zoom" min="10" max="600" step="1">
+        <div class="icons">
+          <button class="btn sec" id="rotL" title="Rotate left" aria-label="Rotate left"><svg viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></svg></button>
+          <button class="btn sec" id="rotR" title="Rotate right" aria-label="Rotate right"><svg viewBox="0 0 16 16"><g transform="matrix(-1 0 0 1 16 0)"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></g></svg></button>
+          <button class="btn sec" id="flipH" title="Mirror horizontally" aria-label="Mirror horizontally"><svg viewBox="0 0 16 16"><path d="M6 4v8H1.5zM10 4v8h4.5z"/><path d="M8 1.5v13" stroke-dasharray="1.5 1.5"/></svg></button>
+          <button class="btn sec" id="flipV" title="Mirror vertically" aria-label="Mirror vertically"><svg viewBox="0 0 16 16"><g transform="rotate(90 8 8)"><path d="M6 4v8H1.5zM10 4v8h4.5z"/><path d="M8 1.5v13" stroke-dasharray="1.5 1.5"/></g></svg></button>
+        </div>
       </div>
+      <div class="btns">
+        <button class="btn sec" id="fitAll">Fill whole cover</button>
+        <button class="btn sec" id="fitFront">Fill front only</button>
+        <button class="btn sec" id="fitContain">Show whole image</button>
+        <button class="btn sec" id="addText">+ Add text</button>
+        <label class="btn sec swatch">Background <input type="color" id="coverBg"></label>
+      </div>
+      <p class="hint">Unlock the cover, then drag to move, scroll or pinch to zoom. It locks again after 3 seconds without changes. The light border is the bleed, the colored band is the spine with its fold lines. Tap a text to edit it. The background shows wherever the image doesn't cover.</p>
     </div>
-    <div class="btns">
-      <button class="btn sec" id="fitAll">Fill whole cover</button>
-      <button class="btn sec" id="fitFront">Fill front only</button>
-      <button class="btn sec" id="fitContain">Show whole image</button>
+    <div class="txt" id="txtTools" hidden>
+      <textarea id="tText" rows="2" aria-label="Text"></textarea>
+      <div class="r">
+        <select id="tFont" aria-label="Font"></select>
+        <div class="inp"><input type="number" id="tSize" step="1" min="4" aria-label="Font size"><span>pt</span></div>
+        <label class="btn sec swatch">Color <input type="color" id="tColor"></label>
+        <div class="seg" id="tStyle">
+          <button data-v="bold" title="Bold" aria-label="Bold"><b>B</b></button>
+          <button data-v="italic" title="Italic" aria-label="Italic"><i>I</i></button>
+          <button data-v="underline" title="Underline" aria-label="Underline"><u>U</u></button>
+        </div>
+      </div>
+      <div class="r">
+        <div class="seg" id="tAlign">
+          <button data-v="left" title="Align left" aria-label="Align left"><svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h7M2 12h10"/></svg></button>
+          <button data-v="center" title="Align center" aria-label="Align center"><svg viewBox="0 0 16 16"><path d="M2 4h12M4.5 8h7M3 12h10"/></svg></button>
+          <button data-v="right" title="Align right" aria-label="Align right"><svg viewBox="0 0 16 16"><path d="M2 4h12M7 8h7M4 12h10"/></svg></button>
+        </div>
+        <div class="seg">
+          <button id="tCenterX" title="Center across" aria-label="Center across"><svg viewBox="0 0 16 16"><path d="M8 1.5v4M8 10.5v4"/><rect x="3" y="5.5" width="10" height="5" rx="1"/></svg></button>
+          <button id="tCenterY" title="Center down" aria-label="Center down"><svg viewBox="0 0 16 16"><path d="M1 8h2.5M12.5 8H15"/><rect x="3.5" y="4" width="9" height="8" rx="1"/></svg></button>
+          <button id="tTurn" title="Rotate" aria-label="Rotate"><svg viewBox="0 0 16 16"><g transform="matrix(-1 0 0 1 16 0)"><path d="M3 8a5 5 0 1 0 1.6-3.7L2.5 6.2M2.5 2.8v3.4h3.4"/></g></svg></button>
+        </div>
+        <button class="btn sec" id="tDel">Delete</button>
+        <button class="btn" id="tDone">Done</button>
+      </div>
+      <p class="hint">Drag the text to move it. It snaps to the middle of the front, back and spine. Center across and down use the part the text is on.</p>
     </div>
-    <p class="hint">Unlock the cover, then drag to move, scroll or pinch to zoom. It locks again after 3 seconds without changes. The light border is the bleed, the colored band is the spine with its fold lines.</p>
     <label class="chk"><input type="checkbox" id="spineAuto"> Calculate spine width</label>
     <div class="row4">
       <div class="field"><label for="spine">Spine</label><div class="inp"><input type="number" id="spine" step="0.5" min="0"><span>mm</span></div></div>
@@ -125,11 +157,6 @@
       <div class="field" id="f-coverTh"><label for="coverTh">Cover allowance</label><div class="inp"><input type="number" id="coverTh" step="0.1" min="0"><span>mm</span></div></div>
     </div>
     <p class="hint" id="spineHint">80 g/m² ≈ 0.10 mm · 100 g/m² ≈ 0.12 mm · 120 g/m² ≈ 0.15 mm. The allowance adds room for the cover board.</p>
-    <details class="more">
-      <summary>More options</summary>
-      <div class="field narrow"><label for="coverBg">Background</label><input type="color" id="coverBg"></div>
-      <p class="hint">The background shows wherever the image doesn't cover.</p>
-    </details>
     <div class="summary" id="coverInfo"></div>
   </section>
 
@@ -204,6 +231,7 @@
 <script src="state.js"></script>
 <script src="calibration.js"></script>
 <script src="sheets.js"></script>
+<script src="text.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -100,12 +100,14 @@ function coverBox(C, overlay) {
   const g = imgGeom(C);
   let h = `<svg class="bgc" width="${f(C.Cw)}mm" height="${f(C.Ch)}mm"><rect width="100%" height="100%" fill="${S.coverBg}"/></svg>`;
   if (g) h += `<img class="cimg" alt="" src="${esc(S.imgSrc)}" style="${imgStyle(g)}">`;
+  h += `<div class="texts">${textsHTML(C)}</div>`;
   if (overlay) {
     const b = C.b, W = S.w, fs = overlay;
     h += `<div class="ov trim" style="left:${b}mm;top:${b}mm;width:${f(C.Cw - 2 * b)}mm;height:${f(C.Ch - 2 * b)}mm"></div>`;
     h += `<div class="ov spine" style="left:${f(b + W)}mm;top:0;width:${f(C.sp)}mm;height:${f(C.Ch)}mm"></div>`;
     const lab = (x, t, v) => `<div class="ov lab${v ? ' v' : ''}" style="left:${f(x)}mm;top:${f(b + 4)}mm;font-size:${fs}px">${t}</div>`;
     h += lab(b + W / 2, 'Back') + lab(b + W + C.sp / 2, `Spine ≈ ${C.sp} mm`, true) + lab(b + W + C.sp + W / 2, 'Front');
+    h += `<div class="guide v" hidden></div><div class="guide h" hidden></div>`;
   }
   return `<div class="cov" style="width:${f(C.Cw)}mm;height:${f(C.Ch)}mm">${h}</div>`;
 }

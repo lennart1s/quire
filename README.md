@@ -22,6 +22,7 @@ Quire is a small, self-contained web page. Pick a size and a page pattern, place
 - **Folded spreads or single pages:** spreads print two pages side by side with fold marks. Single pages are cut out one by one.
 - **Patterns:** lines, grid, dots or blank, with adjustable spacing, color and line or dot size. For double-sided printing the pattern is centered, so front and back line up.
 - **Cover with spine:** upload an image or paste an image or Pinterest URL, then drag, zoom, rotate and mirror it into place. Back, front and spine are marked. The spine width is calculated from the number of sheets and the paper thickness.
+- **Text on the cover:** add titles to the front, spine or back, with the fonts installed on your device, and move them freely or snap them to the middle.
 - **Crop and fold marks** on both pages and cover.
 - **Printer calibration:** print a test sheet, enter what you read from it, and Quire corrects the size, the print margin and the front to back alignment for your printer.
 - **Saved notebooks:** save settings, including the cover image, and restore them later from a dropdown.
@@ -55,6 +56,7 @@ The scripts are loaded in this order and share their globals:
 - `state.js`: settings, storage and small helpers
 - `calibration.js`: printer calibration, test sheet and its dialog
 - `sheets.js`: layout and HTML of the printed sheets
+- `text.js`: cover text and its editing
 - `app.js`: the page itself with previews, inputs, cover editing, saved notebooks and printing
 
 The site is deployed with GitHub Pages from the repository root. The `CNAME` file sets the custom domain `quire.sandbothe.dev`.

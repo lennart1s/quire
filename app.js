@@ -7,8 +7,8 @@ function renderStage() {
   K = wpx / C.Cw;
   st.style.height = (C.Ch * K) + 'px';
   st.classList.toggle('empty', !IMG.ok);
-  st.innerHTML = (IMG.ok ? '' : `<div class="ph"><span>Your cover image will appear here</span></div>`) +
-    `<div class="scaled" style="transform:scale(${K / PX})">${coverBox(C, 13 * PX / K)}</div>`;
+  st.innerHTML = (IMG.ok || S.texts.length ? '' : `<div class="ph"><span>Your cover image will appear here</span></div>`) +
+    `<div class="scaled" style="transform:scale(${K / PX});--px:${PX / K}px">${coverBox(C, 13 * PX / K)}</div>`;
 }
 function updateImg() {
   const C = cover(), g = imgGeom(C), el = $('stage').querySelector('.cimg');
@@ -106,6 +106,7 @@ let locked = true, lockT;
 function setLock(on) {
   clearTimeout(lockT);
   locked = on;
+  if (!on) selectText(null);
   st.classList.toggle('unlocked', !on);
   $('lock').lastChild.textContent = on ? 'Unlock' : 'Lock';
 }
@@ -170,8 +171,11 @@ const readFile = file => { const r = new FileReader(); r.onload = () => loadSrc(
 $('file').addEventListener('change', e => { if (e.target.files[0]) readFile(e.target.files[0]); });
 $('loadUrl').onclick = () => fromUrl($('url').value);
 $('url').addEventListener('keydown', e => { if (e.key === 'Enter') fromUrl($('url').value); });
-document.addEventListener('dragover', e => e.preventDefault());
+// text dragged into the cover text is left to the browser
+const intoText = e => e.target === $('tText') && !e.dataTransfer.types.includes('Files');
+document.addEventListener('dragover', e => { if (!intoText(e)) e.preventDefault(); });
 document.addEventListener('drop', e => {
+  if (intoText(e)) return;
   e.preventDefault();
   const file = e.dataTransfer.files[0];
   if (file && file.type.startsWith('image/')) return readFile(file);
@@ -201,7 +205,8 @@ async function refreshList(sel) {
 async function loadConfig(name) {
   const c = await idb('readonly', s => s.get(name));
   if (!c) return;
-  S = { ...DEF, ...c.S }; IMG.ok = false; setLock(true);
+  selectText(null);
+  S = { ...DEF, ...c.S }; dropEmpty(); IMG.ok = false; setLock(true);
   $('cfgName').value = name; msg(''); syncInputs(); save(); renderAll();
   if (S.imgSrc) loadSrc(S.imgSrc, true, () => { S.imgSrc = ''; renderAll(); });
   cfgMsg(`Loaded “${name}”.`);
