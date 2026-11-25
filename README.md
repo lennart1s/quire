@@ -1,10 +1,10 @@
 <div align="center">
 
-<a href="https://quire.sandbothe.dev"><img src=".github/wordmark.svg" alt="Quire" height="96"></a>
+<a href="https://quirelet.de"><img src=".github/wordmark.svg" alt="Quire" height="96"></a>
 
 **Print your own notebooks: pages and a matching cover on plain A4 paper.**
 
-<a href="https://quire.sandbothe.dev"><img src="https://img.shields.io/badge/open-quire.sandbothe.dev-b54f33?style=for-the-badge" alt="Open quire.sandbothe.dev"></a>
+<a href="https://quirelet.de"><img src="https://img.shields.io/badge/open-quirelet.de-b54f33?style=for-the-badge" alt="Open quirelet.de"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-7d7064?style=for-the-badge" alt="MIT license"></a>
 
 </div>
@@ -51,6 +51,8 @@ The one exception is pasting a Pinterest pin link. To find the image, Quire asks
 
 Plain HTML, CSS and JavaScript. Open `index.html` in a browser or serve the folder with any static file server. Chrome and Edge work best for printing.
 
+`how-it-works.html` is the tutorial, a plain page that only shares `style.css`.
+
 The scripts are loaded in this order and share their globals:
 
 - `state.js`: settings, storage and small helpers
@@ -59,7 +61,7 @@ The scripts are loaded in this order and share their globals:
 - `text.js`: cover text and its editing
 - `app.js`: the page itself with previews, inputs, cover editing, saved notebooks and printing
 
-The site is deployed with GitHub Pages from the repository root. The `CNAME` file sets the custom domain `quire.sandbothe.dev`.
+The site runs at [quirelet.de](https://quirelet.de) as static files on an nginx server. Canonical links and share images in both HTML files use that address.
 
 ## License
 
