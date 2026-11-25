@@ -7,7 +7,6 @@
 <meta name="description" content="Print notebook pages and a matching cover on plain A4 paper.">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
-<style id="pagestyle"></style>
 </head>
 <body>
 <header class="top">
@@ -30,22 +29,19 @@
     <div class="field">
       <label for="preset">Preset</label>
       <select id="preset">
-        <option value="148x210">A5 · 148 × 210 mm</option>
         <option value="105x148">A6 · 105 × 148 mm</option>
         <option value="125x176">B6 · 125 × 176 mm</option>
         <option value="90x140">Pocket · 90 × 140 mm</option>
         <option value="85x135">Field notes · 85 × 135 mm</option>
-        <option value="110x210">Traveler's · 110 × 210 mm</option>
         <option value="custom">Custom size</option>
       </select>
     </div>
-    <div class="row4">
+    <div class="row3">
       <div class="field"><label for="w">Width</label><div class="inp"><input type="number" id="w" step="1" min="20"><span>mm</span></div></div>
       <div class="field"><label for="h">Height</label><div class="inp"><input type="number" id="h" step="1" min="20"><span>mm</span></div></div>
       <div class="field"><label for="bleed">Bleed</label><div class="inp"><input type="number" id="bleed" step="0.5" min="0"><span>mm</span></div></div>
-      <div class="field"><label for="margin">Print margin</label><div class="inp"><input type="number" id="margin" step="0.5" min="0"><span>mm</span></div></div>
     </div>
-    <p class="hint">Width and height are the final size after trimming. Bleed is extra paper around each page that you trim off. The print margin is the edge of the sheet your printer can't reach, usually 3–5 mm.</p>
+    <p class="hint">Width and height are the final size after trimming. Bleed is extra paper around each page that you trim off.</p>
     <details class="more">
       <summary>More options</summary>
       <div class="field narrow"><label for="gap">Gap between pages</label><div class="inp"><input type="number" id="gap" step="0.5" min="0"><span>mm</span></div></div>
@@ -131,10 +127,7 @@
     <p class="hint" id="spineHint">80 g/m² ≈ 0.10 mm · 100 g/m² ≈ 0.12 mm · 120 g/m² ≈ 0.15 mm. The allowance adds room for the cover board.</p>
     <details class="more">
       <summary>More options</summary>
-      <div class="row4">
-        <div class="field"><label for="coverBg">Background</label><input type="color" id="coverBg"></div>
-        <div class="field"><label for="coverPaper">Cover paper</label><select id="coverPaper"><option value="A4">A4</option><option value="A3">A3</option></select></div>
-      </div>
+      <div class="field narrow"><label for="coverBg">Background</label><input type="color" id="coverBg"></div>
       <p class="hint">The background shows wherever the image doesn't cover.</p>
     </details>
     <div class="summary" id="coverInfo"></div>
@@ -145,25 +138,72 @@
     <p class="sub">Check both sheets, then print or save them as a PDF.</p>
     <div class="previews">
       <div class="pv"><div class="pvbox" id="pvInner"></div><span id="pvInnerLab"></span></div>
-      <div class="pv"><div class="pvbox" id="pvCover"></div><span id="pvCoverLab"></span></div>
+      <div class="pv"><div class="pvbox" id="pvCover"></div><span>Cover · A4</span></div>
     </div>
     <div class="btns center">
       <button class="btn" id="printInner">Print pages</button>
       <button class="btn" id="printCover">Print cover</button>
       <button class="btn sec" id="printAll">Everything in one PDF</button>
     </div>
+    <div class="summary calbar"><span id="calInfo"></span><button class="btn sec" id="calOpen">Calibrate printer</button></div>
     <ul class="tips">
       <li>In the print dialog set scale to <b>100 % / Actual size</b>, margins to <b>None</b> and turn headers and footers off.</li>
       <li>To get a PDF, choose “Save as PDF” as the destination.</li>
       <li>Printing both sides: flip on the long edge. The pattern is centered, so front and back line up.</li>
-      <li>“Everything in one PDF” with an A3 cover mixes paper sizes. That works in Chrome and Edge; for printing directly, print separately.</li>
     </ul>
   </section>
 </main>
 
 <footer class="foot">Everything runs in your browser. Your settings and cover image are saved on this device only.</footer>
 
+<dialog class="panel cal" id="cal" closedby="any" aria-labelledby="calTitle">
+  <form class="top-x" method="dialog"><button class="x" aria-label="Close">×</button></form>
+  <h2 id="calTitle">Calibrate your printer</h2>
+  <p>Printers are often slightly off: lines come out a bit too long, the edges stay blank, or the back doesn't line up with the front. Print one test sheet, read five numbers from it and Quire corrects your prints. You only need to do this once per printer. The values are saved on this device and apply to all notebooks.</p>
+  <button class="btn" id="printTest">Print test sheet</button>
+  <p class="hint">Print it like your notebooks: plain A4, scale <b>100 % / Actual size</b>, margins <b>None</b>, no headers and footers, both sides, flipped on the long edge. Not “Fit to page” and not borderless. The arrows on front and back must point the same way. The numbers below match the ones on the sheet.</p>
+
+  <div class="step">
+    <h3><span class="num">1</span>Size</h3>
+    <div class="art wide" id="art1" aria-hidden="true"></div>
+    <p>Measure the long horizontal and the long vertical line with a ruler, from the middle of one end tick to the middle of the other. Using the same edge of both ticks is easiest: left edge to left edge, top edge to top edge. Both lines should be 160 mm. Enter what you measure, as exactly as you can.</p>
+    <div class="row">
+      <div class="field"><label for="calW">Width line</label><div class="inp"><input type="number" id="calW" step="0.1" min="0"><span>mm</span></div></div>
+      <div class="field"><label for="calH">Height line</label><div class="inp"><input type="number" id="calH" step="0.1" min="0"><span>mm</span></div></div>
+    </div>
+    <p class="hint warn" id="calWarn" hidden>A value that is more than 1.5 % off isn't corrected. The print dialog probably scaled the sheet: print it again at 100 %.</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="num">2</span>Edges</h3>
+    <div class="art wide" id="art2" aria-hidden="true"></div>
+    <p>Each edge has a row of numbered lines, and the ones your printer can't reach are missing. On all four edges of both pages, find the smallest number whose line is printed. Enter the largest of these eight numbers. In the picture, that edge reads 3.5.</p>
+    <div class="field narrow"><label for="margin">Print margin</label><div class="inp"><input type="number" id="margin" step="0.5" min="0"><span>mm</span></div></div>
+    <p class="hint">Use the printed number, not the distance to the paper edge. If the two differ, the paper isn't where the printer expects it. On double-sided prints that pushes front and back apart, which step 3 corrects, but it costs usable space. If it's more than about 2 mm, first check the paper guides and that the paper size is set to A4, then print the sheet again.</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="num">3</span>Front and back</h3>
+    <div class="art" id="art3" aria-hidden="true"></div>
+    <p>Hold the sheet against the light with the front facing you. The red lines from the back show through. Read where they cross the two scales in the middle of the sheet, including the sign. The picture reads +1.5 across and −1 down. Quire moves front and back by half of it each, so they meet.</p>
+    <div class="row">
+      <div class="field"><label for="backX">Across (top scale)</label><div class="inp"><input type="number" id="backX" step="0.5"><span>mm</span></div></div>
+      <div class="field"><label for="backY">Down (left scale)</label><div class="inp"><input type="number" id="backY" step="0.5"><span>mm</span></div></div>
+    </div>
+    <p class="hint">If the two skew checks show clearly different values, the paper goes in crooked, which Quire can't correct. The offset also varies a little from sheet to sheet, so it helps to print a few and enter the average.</p>
+  </div>
+
+  <div class="step">
+    <h3>Check the result</h3>
+    <p>Print the sheet again, now with your correction. The lines should be 160 mm and the red lines should cross at 0. Don't enter values from this sheet: only the uncorrected one counts.</p>
+    <div class="btns"><button class="btn sec" id="printCheck">Print with correction</button><form method="dialog"><button class="btn">Done</button></form></div>
+  </div>
+</dialog>
+
 <div id="print"></div>
+<script src="state.js"></script>
+<script src="calibration.js"></script>
+<script src="sheets.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

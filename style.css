@@ -138,11 +138,27 @@ details.more summary { cursor: pointer; font-size: 13px; font-weight: 600; color
 .tips { font-size: 13px; color: var(--mute); margin: 18px 0 0; padding-left: 18px }
 .tips li { margin: 3px 0 }
 
+.calbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px }
+.calbar span { flex: 1 1 260px }
+.cal { width: min(680px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); margin: auto; color: inherit; overscroll-behavior: contain }
+.cal::backdrop { background: rgba(47, 38, 32, .5) }
+.cal h2 { padding-right: 30px }
+.cal h3 { font: 600 19px/1.2 var(--serif); margin: 0 0 10px; display: flex; align-items: center; gap: 10px }
+.cal p:not(.hint) { margin: 10px 0 }
+.cal .top-x { position: sticky; top: 0; height: 0; z-index: 1; text-align: right }
+.cal .x { margin: -14px -14px 0 0; width: 34px; height: 34px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(47, 38, 32, .2), 0 4px 14px rgba(47, 38, 32, .18); color: var(--mute); font-size: 22px; line-height: 1; cursor: pointer }
+.cal .x:hover { background: var(--soft) }
+.cal .step { border-top: 1px dashed var(--line); margin-top: 20px; padding-top: 18px }
+.cal .art { width: 260px; max-width: 100%; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden }
+.cal .art.wide { width: 100% }
+.cal .art svg { display: block; height: auto }
+
 /* print sheets */
 .sheet { position: relative; overflow: hidden; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .sheet .a { position: absolute }
 .sheet svg { display: block }
 #print { display: none }
+@page { size: 210mm 297mm; margin: 0 }
 @media print {
   html, body { background: #fff; margin: 0; padding: 0 }
   body > *:not(#print) { display: none !important }
